@@ -160,6 +160,26 @@ function updateTimerDisplay() {
     `${String(Math.floor(timerSeconds / 60)).padStart(2, "0")}:${String(timerSeconds % 60).padStart(2, "0")}`;
 }
 
+$("subjectTimeLimit").addEventListener("change", () => {
+  if (timerRunning) {
+    alert("पहले Timer को Pause या Reset करें।");
+    return;
+  }
+
+  const limit = Number($("subjectTimeLimit").value);
+
+  if (!Number.isFinite(limit) || limit < 5 || limit > 600) {
+    alert("समय 5 से 600 मिनट के बीच रखें।");
+    return;
+  }
+
+  timerSeconds = limit * 60;
+  updateTimerDisplay();
+
+  $("subjectTimeStatus").textContent =
+    `Your subject time limit is ${limit} minutes.`;
+});
+
 $("timerReset").onclick = () => {
   clearInterval(timerInterval);
   timerRunning = false;
