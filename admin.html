@@ -263,6 +263,36 @@ userIdCell.addEventListener("click", async () => {
     const tasksSnapshot = await getDocs(
       collection(db, "users", userDoc.id, "tasks")
     );
+    
+    // Get Focus Sessions
+    const sessionsSnapshot = await getDocs(
+      collection(db, "users", userDoc.id, "sessions")
+    );
+
+    // Calculate Task Statistics
+    const totalTasks = tasksSnapshot.size;
+    let completedTasks = 0;
+
+    tasksSnapshot.forEach((taskDoc) => {
+      const task = taskDoc.data();
+
+      if (task.completed === true || task.status === "completed") {
+        completedTasks++;
+      }
+    });
+
+    const pendingTasks = totalTasks - completedTasks;
+
+    // Calculate Study Hours
+    let totalMinutes = 0;
+
+    sessionsSnapshot.forEach((sessionDoc) => {
+      const session = sessionDoc.data();
+      totalMinutes += Number(session.duration || session.minutes || 0);
+    });
+
+    const totalHours = (totalMinutes / 60).toFixed(1);
+
 
     const progress = progressDoc.exists()
       ? JSON.stringify(progressDoc.data(), null, 2)
@@ -277,6 +307,20 @@ userIdCell.addEventListener("click", async () => {
     details.innerHTML = "";
 
     const heading = document.createElement("h3");
+    
+    // Activity Overview
+    const activityHeading = document.createElement("h4");
+    activityHeading.textContent = "Activity Overview";
+
+    const activityText = document.createElement("div");
+
+    activityText.innerHTML = `
+      <p>Total Study Hours: <strong>${totalHours}</strong></p>
+      <p>Total Focus Sessions: <strong>${sessionsSnapshot.size}</strong></p>
+      <p>Completed Tasks: <strong>${completedTasks}</strong></p>
+      <p>Pending Tasks: <strong>${pendingTasks}</strong></p>
+    `;
+
     heading.textContent = "User Study Details";
 
     const progressHeading = document.createElement("h4");
@@ -292,12 +336,14 @@ userIdCell.addEventListener("click", async () => {
     tasksText.textContent = tasks;
 
     details.append(
-      heading,
-      progressHeading,
-      progressText,
-      tasksHeading,
-      tasksText
-    );
+  heading,
+  activityHeading,
+  activityText,
+  progressHeading,
+  progressText,
+  tasksHeading,
+  tasksText
+);
 
   } catch (error) {
     details.textContent = "Unable to load details: " + error.message;
