@@ -138,7 +138,7 @@ if (firebaseReady()) {
           throw new Error("User profile not found.");
         }
 
-        const accountStatus = userSnap.data().accountStatus;
+        const accountStatus = String(userSnap.data().accountStatus || "").trim();
 
         console.log("ACCOUNT STATUS:", accountStatus);
         console.log("CURRENT USER UID:", u.uid);
