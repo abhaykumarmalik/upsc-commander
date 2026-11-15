@@ -159,6 +159,40 @@ tbody tr:hover {
       </tr>
     </tbody>
   </table>
+  
+<!-- STUDENT PERFORMANCE RANKING -->
+<div id="rankingSection"
+     style="margin-top:25px; padding:20px;
+     background:#111c30; border-radius:12px; color:white;">
+
+  <h3>🏆 Student Performance Ranking</h3>
+
+  <p>Students ranked by study hours and task completion.</p>
+
+  <div style="overflow-x:auto;">
+    <table style="width:100%; border-collapse:collapse; color:white;">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Student Email</th>
+          <th>Study Hours</th>
+          <th>Completed Tasks</th>
+          <th>Pending Tasks</th>
+          <th>Performance</th>
+        </tr>
+      </thead>
+
+      <tbody id="rankingList">
+        <tr>
+          <td colspan="6">Loading rankings...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+<!-- END PERFORMANCE RANKING -->
+
   <div id="userDetails"
      style="margin-top:25px; padding:20px;
      background:#111c30; border-radius:12px; color:white;">
@@ -282,7 +316,99 @@ usersSnapshot.forEach((userDoc) => {
     }
   }
 });
+// STUDENT PERFORMANCE RANKING
+const rankingList = document.getElementById("rankingList");
 
+rankingList.innerHTML = `
+  <tr>
+    <td colspan="6">Calculating student rankings...</td>
+  </tr>
+`;
+
+const studentRankings = await Promise.all(
+  usersSnapshot.docs.map(async (userDoc) => {
+    const data = userDoc.data();
+
+    const tasksSnapshot = await getDocs(
+      collection(db, "users", userDoc.id, "tasks")
+    );
+
+    const sessionsSnapshot = await getDocs(
+      collection(db, "users", userDoc.id, "sessions")
+    );
+
+    let completedTasks = 0;
+    let totalMinutes = 0;
+
+    tasksSnapshot.forEach((taskDoc) => {
+      const task = taskDoc.data();
+
+      if (
+        task.done === true ||
+        task.completed === true ||
+        task.status === "completed"
+      ) {
+        completedTasks++;
+      }
+    });
+
+    sessionsSnapshot.forEach((sessionDoc) => {
+      const session = sessionDoc.data();
+
+      totalMinutes += Number(
+        session.minutes || session.durationMinutes || 0
+      );
+    });
+
+    const totalTasks = tasksSnapshot.size;
+    const pendingTasks = totalTasks - completedTasks;
+    const studyHours = totalMinutes / 60;
+
+    const completionRate = totalTasks > 0
+      ? (completedTasks / totalTasks) * 100
+      : 0;
+
+    return {
+      email: data.email || "Not available",
+      studyHours,
+      completedTasks,
+      pendingTasks,
+      completionRate
+    };
+  })
+);
+
+studentRankings.sort((a, b) =>
+  b.studyHours - a.studyHours ||
+  b.completionRate - a.completionRate
+);
+
+rankingList.innerHTML = "";
+
+studentRankings.forEach((student, index) => {
+  const row = document.createElement("tr");
+
+  row.innerHTML = `
+    <td>${index + 1}</td>
+    <td></td>
+    <td>${student.studyHours.toFixed(1)} hrs</td>
+    <td>${student.completedTasks}</td>
+    <td>${student.pendingTasks}</td>
+    <td>${student.completionRate.toFixed(0)}%</td>
+  `;
+
+  row.cells[1].textContent = student.email;
+
+  rankingList.appendChild(row);
+});
+
+if (studentRankings.length === 0) {
+  rankingList.innerHTML = `
+    <tr>
+      <td colspan="6">No students found.</td>
+    </tr>
+  `;
+}
 // Update Statistics Cards
 document.getElementById("activeUsers").textContent = activeCount;
 
