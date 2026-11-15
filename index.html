@@ -95,6 +95,24 @@
           <article class="panel timer-panel">
             <p class="eyebrow">FOCUS MODE</p><h3>Study Timer</h3>
             <select id="timerSubject" class="timer-select"></select>
+            <div class="subject-time-limit">
+  <label for="subjectTimeLimit">
+    Subject Time Limit (minutes)
+  </label>
+
+  <input
+    type="number"
+    id="subjectTimeLimit"
+    min="5"
+    max="600"
+    value="60"
+    class="timer-select"
+  />
+
+  <p class="muted" id="subjectTimeStatus">
+    Your subject time limit is 60 minutes.
+  </p>
+</div>
             <div class="timer-display" id="timerDisplay">25:00</div>
             <p class="muted" id="timerStatus">Ready when you are. One focused session at a time.</p>
             <div class="timer-controls"><button class="primary" id="timerStart">Start</button><button class="secondary" id="timerReset">Reset</button></div>
