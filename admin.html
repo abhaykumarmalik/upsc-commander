@@ -426,7 +426,9 @@ actionButton.style.cssText =
 
 actionButton.onclick = async () => {
   const newStatus =
-    currentStatus === "Suspended" ? "Active" : "Suspended";
+  statusCell.textContent.trim() === "Suspended"
+    ? "Active"
+    : "Suspended";
 
   const confirmed = confirm(
     "Are you sure you want to set this user as " + newStatus + "?"
