@@ -508,6 +508,11 @@ userInfo.innerHTML = `
 
     const tasksText = document.createElement("pre");
     // Subject-wise Study Report
+
+const subjectHeading = document.createElement("h4");
+subjectHeading.textContent = "Subject-wise Study Report";
+
+const subjectText = document.createElement("pre");
 const subjectStats = {};
 
 tasksSnapshot.forEach((taskDoc) => {
@@ -533,11 +538,6 @@ tasksSnapshot.forEach((taskDoc) => {
     subjectStats[subject].completedTasks++;
   }
 });
-
-const subjectHeading = document.createElement("h4");
-subjectHeading.textContent = "Subject-wise Study Report";
-
-const subjectText = document.createElement("pre");
 
 subjectText.textContent = Object.entries(subjectStats).length
   ? Object.entries(subjectStats).map(([subject, stats]) => {
