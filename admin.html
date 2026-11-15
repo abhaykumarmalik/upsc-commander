@@ -118,15 +118,14 @@ tbody tr:hover {
 <div style="overflow-x:auto;">
   <table style="width:100%; border-collapse:collapse; color:white;">
     <thead>
-      <th>Account Status</th>
-      <th>Action</th>
       <tr>
-        <th>User ID</th>
-        <th>Email</th>
-        <th>Registration Date</th>
-        <th>Last Login</th>
-        <th>Account Status</th>
-      </tr>
+    <th>User ID</th>
+    <th>Email</th>
+    <th>Registration Date</th>
+    <th>Last Login</th>
+    <th>Account Status</th>
+    <th>Action</th>
+  </tr>
     </thead>
     <tbody id="usersList">
       <tr>
@@ -243,6 +242,21 @@ console.log("Admin Auth User:", user);
 statusCell.textContent = data.accountStatus || "Active";
 
             const row = document.createElement("tr");
+            // User Email
+const emailCell = document.createElement("td");
+emailCell.textContent = data.email || "Not available";
+
+// Registration Date
+const createdCell = document.createElement("td");
+createdCell.textContent = data.createdAt
+  ? new Date(data.createdAt).toLocaleString("en-IN")
+  : "Not available";
+
+// Last Login
+const loginCell = document.createElement("td");
+loginCell.textContent = data.lastLogin
+  ? new Date(data.lastLogin).toLocaleString("en-IN")
+  : "Not available";
 
             const userIdCell = document.createElement("td");
             userIdCell.textContent = userDoc.id;
@@ -415,7 +429,7 @@ const actionCell = document.createElement("td");
 
 const actionButton = document.createElement("button");
 
-const currentStatus = data.accountStatus || "Active";
+const currentStatus = String(data.accountStatus || "Active").trim();
 
 actionButton.textContent =
   currentStatus === "Suspended" ? "Reactivate" : "Suspend";
