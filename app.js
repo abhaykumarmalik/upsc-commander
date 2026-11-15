@@ -81,18 +81,53 @@ $("authForm").onsubmit = async e => {
       );
     }
 
+    try {
+  const email = $("email").value.trim();
+  const password = $("password").value;
+
+  let credential;
+
+  if (authMode === "register") {
+    credential = await createUserWithEmailAndPassword(
+      auth, email, password
+    );
+
     const account = credential.user;
 
     await setDoc(doc(db, "users", account.uid), {
       uid: account.uid,
       email: account.email || "",
       createdAt: account.metadata.creationTime || "",
-      lastLogin: account.metadata.lastSignInTime || ""
-    }, { merge: true });
+      lastLogin: account.metadata.lastSignInTime || "",
+      accountStatus: "Active"
+    });
 
-  } catch (err) {
-    $("authMessage").textContent = err.message;
+  } else {
+    credential = await signInWithEmailAndPassword(
+      auth, email, password
+    );
+
+    const account = credential.user;
+    const userSnap = await getDoc(
+      doc(db, "users", account.uid)
+    );
+
+    if (
+      userSnap.exists() &&
+      userSnap.data().accountStatus === "Suspended"
+    ) {
+      await signOut(auth);
+
+      $("authMessage").textContent =
+        "Your account is suspended. Please contact the administrator.";
+
+      return;
+    }
   }
+
+} catch (err) {
+  $("authMessage").textContent = err.message;
+}
 };
 
 $("logoutButton").onclick=async()=>{if(!demo&&auth)await signOut(auth);user=null;demo=false;showAuth()};
