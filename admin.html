@@ -81,26 +81,22 @@
         return;
       }
 
-      try {
-        const adminDoc = await getDoc(
-          doc(db, "admins", user.uid)
-        );
+     try {
+    const adminDoc = await getDoc(
+      doc(db, "admins", user.uid)
+    );
 
-        if (adminDoc.exists() &&
-            adminDoc.data().role === "admin") {
-          status.textContent = "Admin access verified.";
-        } else {
-          status.textContent = "Access denied: Not an admin.";
-        }
-      } catch (error) {
-        status.textContent = "Error checking admin access.";
-        console.error(error);
-      }
-    });
+    const role = adminDoc.exists()
+      ? adminDoc.data().role
+      : "Document not found";
 
-    document.getElementById("logout").onclick = () => {
-      signOut(auth);
-    };
-  </script>
-</body>
-</html>
+    status.textContent =
+      "Login UID: " + user.uid +
+      " | Document exists: " + adminDoc.exists() +
+      " | Role: " + role;
+
+  } catch (error) {
+    status.textContent = "Firebase Error: " + error.message;
+    console.error(error);
+  }
+});
