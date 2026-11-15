@@ -177,6 +177,46 @@ function renderDashboard(){
   $("currentStreak").textContent = currentStreak + " days";
   $("longestStreak").textContent = longestStreak + " days";
   $("monthlyConsistency").textContent = monthlyDays + " days";
+  
+const goalHistory = [];
+
+for (let i = 6; i >= 0; i--) {
+  const d = new Date();
+  d.setDate(d.getDate() - i);
+
+  const dateKey = d.toLocaleDateString("en-CA");
+
+  const dailyMinutes = sessions
+    .filter(s => s.date === dateKey)
+    .reduce((total, s) => total + Number(s.minutes || 0), 0);
+
+  const percentage = Math.min(
+    100,
+    (dailyMinutes / (dailyGoal * 60)) * 100
+  );
+
+  goalHistory.push({
+    label: d.toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short"
+    }),
+    hours: (dailyMinutes / 60).toFixed(1),
+    percentage
+  });
+}
+
+$("goalHistory").innerHTML = goalHistory.map(day => `
+  <div class="task-row">
+    <div class="task-info">
+      <div class="task-name">${day.label} — ${day.hours} hours</div>
+      <div class="progress-track">
+        <div class="progress-fill" style="width:${day.percentage}%"></div>
+      </div>
+    </div>
+    <strong>${day.percentage.toFixed(0)}%</strong>
+  </div>
+`).join("");
+
 
   renderTasks();
 }
