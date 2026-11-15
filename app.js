@@ -135,6 +135,7 @@ if(firebaseReady()){try{const app=initializeApp(FIREBASE_CONFIG);auth=getAuth(ap
     const userSnap = await getDoc(userRef);
     console.log("LOGIN STATUS:", userSnap.exists(), userSnap.data());
     console.log("ACCOUNT STATUS:", userSnap.data()?.accountStatus);
+    console.log("FULL USER DATA:", JSON.stringify(userSnap.data()));
 
     if (userSnap.exists() &&
         userSnap.data().accountStatus === "Suspended") {
