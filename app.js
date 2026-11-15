@@ -630,6 +630,72 @@ if (subjectPerformanceList.length > 0) {
   $("topSubjectHours").textContent = "0h";
 }
 
+// SUBJECT STUDY GOALS
+let subjectGoals = JSON.parse(
+  localStorage.getItem("subjectGoals") || "{}"
+);
+
+function renderSubjectGoals() {
+  const container = $("subjectGoalsList");
+
+  const entries = Object.entries(subjectGoals);
+
+  if (entries.length === 0) {
+    container.innerHTML =
+      '<p class="muted">No subject goals added yet.</p>';
+    return;
+  }
+
+  container.innerHTML = entries.map(([subject, hours]) => {
+    const studiedMinutes = monthSessions
+      .filter(session => session.subject === subject)
+      .reduce(
+        (total, session) =>
+          total + Number(session.minutes || session.durationMinutes || 0),
+        0
+      );
+
+    const studiedHours = studiedMinutes / 60;
+    const progress = Math.min((studiedHours / hours) * 100, 100);
+
+    return `
+      <div style="margin:15px 0;">
+        <div style="display:flex; justify-content:space-between; gap:10px;">
+          <strong>${subject}</strong>
+          <span class="muted">
+            ${studiedHours.toFixed(1)}h / ${hours}h
+          </span>
+        </div>
+        <div style="height:10px; background:#1e293b; border-radius:10px; overflow:hidden; margin-top:8px;">
+          <div style="height:100%; width:${progress}%; background:#38bdf8;"></div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+$("saveSubjectGoal").onclick = () => {
+  const subject = $("goalSubject").value;
+  const hours = Number($("subjectGoalHours").value);
+
+  if (!hours || hours < 1 || hours > 300) {
+    alert("Please enter a target between 1 and 300 hours.");
+    return;
+  }
+
+  subjectGoals[subject] = hours;
+
+  localStorage.setItem(
+    "subjectGoals",
+    JSON.stringify(subjectGoals)
+  );
+
+  $("subjectGoalHours").value = "";
+  renderSubjectGoals();
+};
+
+renderSubjectGoals();
+
   renderTasks();
 }
 function renderSubjects(){$("subjectGrid").innerHTML=SUBJECTS.map(s=>{const p=subjectProgress[s]||0;return `<article class="subject-card"><div class="subject-top"><strong>${esc(s)}</strong><span>${p}%</span></div><div class="progress-track"><div class="progress-fill" style="width:${p}%"></div></div><small>Self-reported syllabus completion</small><div class="subject-actions"><button data-progress="${esc(s)}" data-delta="-5">−5%</button><button data-progress="${esc(s)}" data-delta="5">+5%</button><button data-progress="${esc(s)}" data-delta="10">+10%</button></div></article>`}).join("")}
