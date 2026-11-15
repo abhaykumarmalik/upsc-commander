@@ -469,6 +469,32 @@ tasksText.textContent = tasks;
 
 // Subject-wise Study Report
 
+    const subjectStats = {};
+
+tasksSnapshot.forEach((taskDoc) => {
+  const task = taskDoc.data();
+  const subject = task.subject || "Other";
+
+  if (!subjectStats[subject]) {
+    subjectStats[subject] = {
+      totalTasks: 0,
+      completedTasks: 0,
+      plannedMinutes: 0
+    };
+  }
+
+  subjectStats[subject].totalTasks++;
+  subjectStats[subject].plannedMinutes += Number(task.minutes || 0);
+
+  if (
+    task.done === true ||
+    task.completed === true ||
+    task.status === "completed"
+  ) {
+    subjectStats[subject].completedTasks++;
+  }
+});
+
 const subjectHeading = document.createElement("h4");
 subjectHeading.textContent = "Subject-wise Study Report";
 
