@@ -54,8 +54,47 @@ function renderAll(){renderDashboard();renderSubjects();renderAnalytics();$("pla
 function navigate(v){view=v;document.querySelectorAll(".view").forEach(el=>el.classList.add("hidden"));$("view-"+v).classList.remove("hidden");document.querySelectorAll(".nav-item[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===v));$("pageTitle").textContent=({dashboard:"Dashboard",planner:"Daily Planner",subjects:"Subject Tracker",timer:"Study Timer",analytics:"Analytics"})[v]}
 function setAuthMode(m){authMode=m;$("loginTab").classList.toggle("active",m==="login");$("registerTab").classList.toggle("active",m==="register");$("authSubmit").textContent=m==="login"?"Sign in":"Create account";$("password").autocomplete=m==="login"?"current-password":"new-password";$("authMessage").textContent=""}
 $("loginTab").onclick=()=>setAuthMode("login");$("registerTab").onclick=()=>setAuthMode("register");
-$("authForm").onsubmit=async e=>{e.preventDefault();$("authMessage").textContent="";if(!firebaseReady()){ $("authMessage").textContent="Firebase is not configured yet. Use demo mode or follow README setup.";return}try{const email=$("email").value.trim(),password=$("password").value;if(authMode==="register")await createUserWithEmailAndPassword(auth,email,password);else await signInWithEmailAndPassword(auth,email,password)}catch(err){$("authMessage").textContent=err.message}}
-$("demoButton").onclick=()=>{user={email:"Demo Aspirant"};const d=readLocal();tasks=d.tasks;sessions=d.sessions;subjectProgress=d.subjectProgress;setMode("demo");showApp();toast("Demo mode ready")};
+
+$("authForm").onsubmit = async e => {
+  e.preventDefault();
+  $("authMessage").textContent = "";
+
+  if (!firebaseReady()) {
+    $("authMessage").textContent =
+      "Firebase is not configured yet.";
+    return;
+  }
+
+  try {
+    const email = $("email").value.trim();
+    const password = $("password").value;
+
+    let credential;
+
+    if (authMode === "register") {
+      credential = await createUserWithEmailAndPassword(
+        auth, email, password
+      );
+    } else {
+      credential = await signInWithEmailAndPassword(
+        auth, email, password
+      );
+    }
+
+    const account = credential.user;
+
+    await setDoc(doc(db, "users", account.uid), {
+      uid: account.uid,
+      email: account.email || "",
+      createdAt: account.metadata.creationTime || "",
+      lastLogin: account.metadata.lastSignInTime || ""
+    }, { merge: true });
+
+  } catch (err) {
+    $("authMessage").textContent = err.message;
+  }
+};
+
 $("logoutButton").onclick=async()=>{if(!demo&&auth)await signOut(auth);user=null;demo=false;showAuth()};
 $("taskForm").onsubmit=async e=>{e.preventDefault();await addTask({title:$("taskTitle").value.trim(),subject:$("taskSubject").value,minutes:Number($("taskMinutes").value),date:selectedDate});$("taskTitle").value="";toast("Task added")};
 $("plannerDate").onchange=e=>{selectedDate=e.target.value||today();renderTasks()};
