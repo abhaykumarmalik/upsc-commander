@@ -384,6 +384,9 @@ userIdCell.addEventListener("click", async () => {
     });
 
     const pendingTasks = totalTasks - completedTasks;
+    const completionRate = totalTasks > 0
+  ? ((completedTasks / totalTasks) * 100).toFixed(1)
+  : 0;
 
     // Calculate Study Hours
     let totalMinutes = 0;
@@ -421,9 +424,17 @@ userIdCell.addEventListener("click", async () => {
       <p>Total Focus Sessions: <strong>${sessionsSnapshot.size}</strong></p>
       <p>Completed Tasks: <strong>${completedTasks}</strong></p>
       <p>Pending Tasks: <strong>${pendingTasks}</strong></p>
+      <p>Task Completion Rate: <strong>${completionRate}%</strong></p>
     `;
 
     heading.textContent = "User Study Details";
+    const userInfo = document.createElement("div");
+
+userInfo.innerHTML = `
+  <p>User ID: <strong>${userDoc.id}</strong></p>
+  <p>Email: <strong>${data.email || "Not available"}</strong></p>
+  <p>Account Status: <strong>${String(data.accountStatus || "Active").trim()}</strong></p>
+`;
 
     const progressHeading = document.createElement("h4");
     progressHeading.textContent = "Study Progress";
@@ -436,15 +447,29 @@ userIdCell.addEventListener("click", async () => {
 
     const tasksText = document.createElement("pre");
     tasksText.textContent = tasks;
+    // Focus Session Records
+const sessionsHeading = document.createElement("h4");
+sessionsHeading.textContent = "Focus Session Records";
+
+const sessionsText = document.createElement("pre");
+
+sessionsText.textContent = sessionsSnapshot.empty
+  ? "No focus sessions found."
+  : sessionsSnapshot.docs.map(sessionDoc =>
+      JSON.stringify(sessionDoc.data(), null, 2)
+    ).join("\n\n");
 
     details.append(
   heading,
+  userInfo,
   activityHeading,
   activityText,
   progressHeading,
   progressText,
-  tasksHeading,
-  tasksText
+    tasksHeading,
+  tasksText,
+  sessionsHeading,
+  sessionsText
 );
     
     // Download PDF Report Button
