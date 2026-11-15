@@ -106,5 +106,35 @@ function updateTimerDisplay(){$("timerDisplay").textContent=`${String(Math.floor
 $("timerReset").onclick=()=>{clearInterval(timerInterval);timerRunning=false;timerStartedAt=null;timerSeconds=25*60;updateTimerDisplay();$("timerStart").textContent="Start";$("timerStatus").textContent="Timer reset."};
 document.querySelectorAll("[data-minutes]").forEach(b=>b.onclick=()=>{clearInterval(timerInterval);timerRunning=false;timerStartedAt=null;timerSeconds=Number(b.dataset.minutes)*60;updateTimerDisplay();$("timerStart").textContent="Start";document.querySelectorAll(".preset").forEach(x=>x.classList.toggle("active",x===b))});
 $("exportButton").onclick=()=>{const blob=new Blob([JSON.stringify({tasks,sessions,subjectProgress,exportedAt:new Date().toISOString()},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="upsc-commander-backup.json";a.click();URL.revokeObjectURL(a.href);toast("Backup downloaded")};
-if(firebaseReady()){try{const app=initializeApp(FIREBASE_CONFIG);auth=getAuth(app);db=getFirestore(app);onAuthStateChanged(auth,async u=>{if(u){user=u;try{await loadCloud();setMode("cloud");showApp()}catch(e){console.error(e);$("authMessage").textContent="Could not load cloud data: "+e.message;showAuth()}}else if(!demo){showAuth()}})}catch(e){console.error("Firebase init error",e)}}
+if(firebaseReady()){try{const app=initializeApp(FIREBASE_CONFIG);auth=getAuth(app);db=getFirestore(app);onAuthStateChanged(auth,async u=>{if (u) {
+  user = u;
+
+  try {
+    const userRef = doc(db, "users", u.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (userSnap.exists() &&
+        userSnap.data().accountStatus === "Suspended") {
+
+      await signOut(auth);
+      user = null;
+
+      $("authMessage").textContent =
+        "Your account is suspended. Please contact the administrator.";
+
+      showAuth();
+      return;
+    }
+
+    await loadCloud();
+    setMode("cloud");
+    showApp();
+
+  } catch (e) {
+    console.error(e);
+    $("authMessage").textContent =
+      "Could not verify account status: " + e.message;
+    showAuth();
+  }
+}else if(!demo){showAuth()}})}catch(e){console.error("Firebase init error",e)}}
 if("serviceWorker" in navigator && location.protocol!=="file:"){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.warn))}
