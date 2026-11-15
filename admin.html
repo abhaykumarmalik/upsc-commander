@@ -66,12 +66,26 @@
     <div class="panel">
       <h2>User Management</h2>
       <p>Total Registered Users:
-        <strong id="totalUsers">0</strong>
-      </p>
-      <div id="usersList">Loading users...</div>
-    </div>
+  <strong id="totalUsers">0</strong>
+</p>
 
-  </div>
+<div style="overflow-x:auto;">
+  <table style="width:100%; border-collapse:collapse; color:white;">
+    <thead>
+      <tr>
+        <th>User ID</th>
+        <th>Email</th>
+        <th>Registration Date</th>
+        <th>Last Login</th>
+      </tr>
+    </thead>
+    <tbody id="usersList">
+      <tr>
+        <td colspan="4">Loading users...</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
   <script type="module">
 
@@ -141,8 +155,13 @@ console.log("Admin Auth User:", user);
 
         status.textContent = "Admin verified successfully.";
 
+        
         // Load Registered Users
-        usersList.textContent = "Loading users...";
+        usersList.innerHTML = `
+          <tr>
+            <td colspan="4">Loading users...</td>
+          </tr>
+        `;
 
         const usersSnapshot = await getDocs(
           collection(db, "users")
@@ -152,23 +171,47 @@ console.log("Admin Auth User:", user);
         usersList.innerHTML = "";
 
         if (usersSnapshot.empty) {
-          usersList.textContent = "No registered users found.";
+          usersList.innerHTML = `
+            <tr>
+              <td colspan="4">No registered users found.</td>
+            </tr>
+          `;
         } else {
-
           usersSnapshot.forEach((userDoc) => {
+            const data = userDoc.data();
 
-            const item = document.createElement("div");
-            item.className = "user-item";
-            item.textContent = "User ID: " + userDoc.id;
+            const row = document.createElement("tr");
 
-            usersList.appendChild(item);
+            const userIdCell = document.createElement("td");
+            userIdCell.textContent = userDoc.id;
 
+            const emailCell = document.createElement("td");
+            emailCell.textContent = data.email || "Not available";
+
+            const createdCell = document.createElement("td");
+            createdCell.textContent = data.createdAt
+              ? new Date(data.createdAt).toLocaleString("en-IN")
+              : "Not available";
+
+            const loginCell = document.createElement("td");
+            loginCell.textContent = data.lastLogin
+              ? new Date(data.lastLogin).toLocaleString("en-IN")
+              : "Not available";
+
+            row.append(
+              userIdCell,
+              emailCell,
+              createdCell,
+              loginCell
+            );
+
+            usersList.appendChild(row);
           });
-
         }
 
         console.log("Admin verified:", user.uid);
         console.log("Total users:", usersSnapshot.size);
+
 
       } catch (error) {
 
