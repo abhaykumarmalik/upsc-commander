@@ -618,6 +618,18 @@ if (subjectPerformanceList.length === 0) {
     }).join("");
 }
 
+// TOP PERFORMING SUBJECT
+if (subjectPerformanceList.length > 0) {
+  const topSubject = subjectPerformanceList[0];
+
+  $("topPerformingSubject").textContent = topSubject[0];
+  $("topSubjectHours").textContent =
+    (topSubject[1] / 60).toFixed(1) + "h";
+} else {
+  $("topPerformingSubject").textContent = "--";
+  $("topSubjectHours").textContent = "0h";
+}
+
   renderTasks();
 }
 function renderSubjects(){$("subjectGrid").innerHTML=SUBJECTS.map(s=>{const p=subjectProgress[s]||0;return `<article class="subject-card"><div class="subject-top"><strong>${esc(s)}</strong><span>${p}%</span></div><div class="progress-track"><div class="progress-fill" style="width:${p}%"></div></div><small>Self-reported syllabus completion</small><div class="subject-actions"><button data-progress="${esc(s)}" data-delta="-5">−5%</button><button data-progress="${esc(s)}" data-delta="5">+5%</button><button data-progress="${esc(s)}" data-delta="10">+10%</button></div></article>`}).join("")}
