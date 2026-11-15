@@ -127,38 +127,82 @@ function updateTimerDisplay(){$("timerDisplay").textContent=`${String(Math.floor
 $("timerReset").onclick=()=>{clearInterval(timerInterval);timerRunning=false;timerStartedAt=null;timerSeconds=25*60;updateTimerDisplay();$("timerStart").textContent="Start";$("timerStatus").textContent="Timer reset."};
 document.querySelectorAll("[data-minutes]").forEach(b=>b.onclick=()=>{clearInterval(timerInterval);timerRunning=false;timerStartedAt=null;timerSeconds=Number(b.dataset.minutes)*60;updateTimerDisplay();$("timerStart").textContent="Start";document.querySelectorAll(".preset").forEach(x=>x.classList.toggle("active",x===b))});
 $("exportButton").onclick=()=>{const blob=new Blob([JSON.stringify({tasks,sessions,subjectProgress,exportedAt:new Date().toISOString()},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="upsc-commander-backup.json";a.click();URL.revokeObjectURL(a.href);toast("Backup downloaded")};
-if(firebaseReady()){try{const app=initializeApp(FIREBASE_CONFIG);auth=getAuth(app);db=getFirestore(app);onAuthStateChanged(auth,async u=>{if (u) {
-  user = u;
 
+if (firebaseReady()) {
   try {
-    const userRef = doc(db, "users", u.uid);
-    const userSnap = await getDoc(userRef);
-    console.log("LOGIN STATUS:", userSnap.exists(), userSnap.data());
-    console.log("ACCOUNT STATUS:", userSnap.data()?.accountStatus);
-    console.log("FULL USER DATA:", JSON.stringify(userSnap.data()));
+    const app = initializeApp(FIREBASE_CONFIG);
+    auth = getAuth(app);
+    db = getFirestore(app);
 
-    if (userSnap.exists() &&
-        userSnap.data().accountStatus === "Suspended") {
+    let authCheckRunning = false;
 
-      await signOut(auth);
-      user = null;
+    onAuthStateChanged(auth, async (u) => {
+      if (authCheckRunning) return;
 
-      $("authMessage").textContent =
-        "Your account is suspended. Please contact the administrator.";
+      if (!u) {
+        user = null;
+        if (!demo) showAuth();
+        return;
+      }
 
-      showAuth();
-      return;
-    }
+      authCheckRunning = true;
+      user = u;
 
-    await loadCloud();
-    setMode("cloud");
-    showApp();
+      try {
+        const userRef = doc(db, "users", u.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+          throw new Error("User profile not found.");
+        }
+
+        const accountStatus = userSnap.data().accountStatus;
+
+        console.log("ACCOUNT STATUS:", accountStatus);
+
+        if (accountStatus !== "Active") {
+          user = null;
+
+          $("authMessage").textContent =
+            accountStatus === "Suspended"
+              ? "Your account is suspended. Please contact the administrator."
+              : "Your account status could not be verified.";
+
+          await signOut(auth);
+          showAuth();
+          return;
+        }
+
+        await loadCloud();
+        setMode("cloud");
+        showApp();
+
+      } catch (e) {
+        console.error("Account verification error:", e);
+
+        user = null;
+        $("authMessage").textContent =
+          "Account verification failed. Please try again.";
+
+        if (auth.currentUser) {
+          await signOut(auth);
+        }
+
+        showAuth();
+
+      } finally {
+        authCheckRunning = false;
+      }
+    });
 
   } catch (e) {
-    console.error(e);
-    $("authMessage").textContent =
-      "Could not verify account status: " + e.message;
-    showAuth();
+    console.error("Firebase init error", e);
   }
-}else if(!demo){showAuth()}})}catch(e){console.error("Firebase init error",e)}}
-if("serviceWorker" in navigator && location.protocol!=="file:"){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.warn))}
+}
+
+if ("serviceWorker" in navigator && location.protocol !== "file:") {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(console.warn);
+  });
+}
+
