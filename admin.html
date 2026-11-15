@@ -102,6 +102,16 @@ tbody tr:hover {
     <div class="panel">
       <h2>User Management</h2>
       <p>Total Registered Users:
+        
+<input
+  type="text"
+  id="userSearch"
+  placeholder="Search by Email or User ID..."
+  style="width:100%; padding:12px; margin:15px 0;
+  border-radius:8px; border:1px solid #334155;
+  background:#111c30; color:white;"
+/>
+
   <strong id="totalUsers">0</strong>
 </p>
 
@@ -246,11 +256,24 @@ statusCell.textContent = "Active";
   statusCell
             );
 
-            usersList.appendChild(row);
+            
+usersList.appendChild(row);
           });
         }
 
+        // Search Users
+        document.getElementById("userSearch").addEventListener("input", function () {
+          const searchValue = this.value.toLowerCase();
+          const rows = usersList.querySelectorAll("tr");
+
+          rows.forEach((row) => {
+            const userDetails = row.textContent.toLowerCase();
+            row.style.display = userDetails.includes(searchValue) ? "" : "none";
+          });
+        });
+
         console.log("Admin verified:", user.uid);
+
         console.log("Total users:", usersSnapshot.size);
 
 
