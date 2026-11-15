@@ -253,6 +253,45 @@ console.log("Admin Auth User:", user);
         );
 
         totalUsers.textContent = usersSnapshot.size;
+        // Count Active and Suspended Users
+let activeCount = 0;
+let suspendedCount = 0;
+let todayCount = 0;
+
+const today = new Date().toDateString();
+
+usersSnapshot.forEach((userDoc) => {
+  const data = userDoc.data();
+
+  const status = String(data.accountStatus || "Active").trim();
+
+  if (status === "Active") {
+    activeCount++;
+  } else if (status === "Suspended") {
+    suspendedCount++;
+  }
+
+  if (data.createdAt) {
+    const registrationDate = new Date(data.createdAt);
+
+    if (
+      !isNaN(registrationDate.getTime()) &&
+      registrationDate.toDateString() === today
+    ) {
+      todayCount++;
+    }
+  }
+});
+
+// Update Statistics Cards
+document.getElementById("activeUsers").textContent = activeCount;
+
+document.getElementById("suspendedUsers").textContent = suspendedCount;
+
+document.getElementById("todayRegistrations").textContent = todayCount;
+
+// Study hours will be connected in the next step
+document.getElementById("totalStudyHours").textContent = "0";
         usersList.innerHTML = "";
 
         if (usersSnapshot.empty) {
