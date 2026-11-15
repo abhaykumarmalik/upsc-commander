@@ -164,7 +164,7 @@ function renderDashboard(){
     longestStreak = Math.max(longestStreak, runningStreak);
     previousDate = currentDate;
   });
-
+  const now = new Date();
   const month = now.getMonth();
   const year = now.getFullYear();
 
