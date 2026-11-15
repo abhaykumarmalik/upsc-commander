@@ -218,6 +218,54 @@ $("goalHistory").innerHTML = goalHistory.map(day => `
 `).join("");
 
 
+// WEEKLY STUDY REPORT
+const weeklyData = [];
+
+for (let i = 6; i >= 0; i--) {
+  const d = new Date();
+  d.setDate(d.getDate() - i);
+
+  const dateKey = d.toLocaleDateString("en-CA");
+
+  const minutes = sessions
+    .filter(s => s.date === dateKey)
+    .reduce((total, s) => total + Number(s.minutes || 0), 0);
+
+  weeklyData.push({
+    date: dateKey,
+    day: d.toLocaleDateString("en-IN", {
+      weekday: "short"
+    }),
+    minutes
+  });
+}
+
+const weeklyTotal = weeklyData.reduce(
+  (total, day) => total + day.minutes,
+  0
+);
+
+const bestDay = weeklyData.reduce(
+  (best, day) => day.minutes > best.minutes ? day : best,
+  { day: "--", minutes: 0 }
+);
+
+const completedGoals = weeklyData.filter(
+  day => day.minutes >= dailyGoal * 60
+).length;
+
+$("weeklyTotalHours").textContent =
+  (weeklyTotal / 60).toFixed(1) + "h";
+
+$("weeklyAverageHours").textContent =
+  (weeklyTotal / 7 / 60).toFixed(1) + "h";
+
+$("weeklyBestDay").textContent =
+  bestDay.minutes > 0 ? bestDay.day : "--";
+
+$("weeklyGoalsCompleted").textContent =
+  completedGoals + "/7";
+
   renderTasks();
 }
 function renderSubjects(){$("subjectGrid").innerHTML=SUBJECTS.map(s=>{const p=subjectProgress[s]||0;return `<article class="subject-card"><div class="subject-top"><strong>${esc(s)}</strong><span>${p}%</span></div><div class="progress-track"><div class="progress-fill" style="width:${p}%"></div></div><small>Self-reported syllabus completion</small><div class="subject-actions"><button data-progress="${esc(s)}" data-delta="-5">−5%</button><button data-progress="${esc(s)}" data-delta="5">+5%</button><button data-progress="${esc(s)}" data-delta="10">+10%</button></div></article>`}).join("")}
