@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1220">
+  <meta name="description" content="UPSC COMMANDER - Personal study planner and time tracker">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
+  <title>UPSC COMMANDER</title>
+</head>
+<body>
+  <div id="authScreen" class="auth-wrap">
+    <div class="auth-card">
+      <div class="brand-mark">UC</div>
+      <p class="eyebrow">YOUR PERSONAL PREPARATION SYSTEM</p>
+      <h1>UPSC <span>COMMANDER</span></h1>
+      <p class="muted">Plan consistently. Track honestly. Prepare intelligently.</p>
+      <div class="auth-tabs">
+        <button class="tab active" id="loginTab">Sign in</button>
+        <button class="tab" id="registerTab">Create account</button>
+      </div>
+      <form id="authForm">
+        <label>Email address<input id="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+        <label>Password<input id="password" type="password" minlength="6" autocomplete="current-password" required placeholder="At least 6 characters"></label>
+        <button class="primary full" id="authSubmit" type="submit">Sign in</button>
+      </form>
+      <div class="auth-divider"><span>OR</span></div>
+      <button class="secondary full" id="demoButton">Continue in demo mode</button>
+      <p class="tiny muted">Demo data stays on this device. Create an account to sync your own data across devices after Firebase setup.</p>
+      <p id="authMessage" class="message" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <div id="app" class="app hidden">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><div class="brand-mark small">UC</div><div><b>UPSC COMMANDER</b><small>PREPARATION OS</small></div></div>
+      <nav>
+        <button class="nav-item active" data-view="dashboard">▦ <span>Dashboard</span></button>
+        <button class="nav-item" data-view="planner">▤ <span>Daily Planner</span></button>
+        <button class="nav-item" data-view="subjects">▣ <span>Subject Tracker</span></button>
+        <button class="nav-item" data-view="timer">◷ <span>Study Timer</span></button>
+        <button class="nav-item" data-view="analytics">▥ <span>Analytics</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="target-card"><small>YOUR TARGET</small><strong>UPSC 2028</strong><span>Consistency over intensity.</span></div>
+        <button id="exportButton" class="nav-item">⇩ <span>Export my data</span></button>
+        <button id="logoutButton" class="nav-item">↪ <span>Sign out</span></button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div><p class="eyebrow" id="todayLabel">YOUR STUDY OVERVIEW</p><h2 id="pageTitle">Dashboard</h2></div>
+        <div class="top-actions"><span class="sync-pill" id="modePill">● DEMO MODE</span><div class="avatar" id="avatar">A</div></div>
+      </header>
+
+      <section class="view" id="view-dashboard">
+        <div class="welcome-panel">
+          <div><p class="eyebrow">STAY FOCUSED</p><h1>Small steps.<br><span>Serious progress.</span></h1><p class="muted">Your daily target is 6 focused study hours.</p></div>
+          <div class="target-ring" id="targetRing"><div><strong id="todayHours">0.0h</strong><small>OF 6 HOURS</small></div></div>
+        </div>
+        <div class="stats-grid">
+          <article class="stat-card"><span class="stat-icon">◷</span><small>STUDY TIME TODAY</small><strong id="statStudy">0h 00m</strong><span class="stat-note">Focused sessions</span></article>
+          <article class="stat-card"><span class="stat-icon">✓</span><small>TASKS COMPLETED</small><strong id="statTasks">0 / 0</strong><span class="stat-note">Today's priorities</span></article>
+          <article class="stat-card"><span class="stat-icon">▣</span><small>SYLLABUS PROGRESS</small><strong id="statSyllabus">0%</strong><span class="stat-note">Across tracked subjects</span></article>
+        </div>
+        <div class="content-grid">
+          <article class="panel"><div class="panel-head"><div><p class="eyebrow">TODAY</p><h3>Priority tasks</h3></div><button class="text-button" data-go="planner">View planner →</button></div><div id="dashboardTasks" class="task-list"></div></article>
+          <article class="panel"><div class="panel-head"><div><p class="eyebrow">QUICK ACTION</p><h3>Start a focus session</h3></div></div><p class="muted">Choose a subject and begin a distraction-free study block.</p><button class="primary full" data-go="timer">Open study timer →</button><div class="quote">“It always seems impossible until it’s done.”<small>— Study principle</small></div></article>
+        </div>
+      </section>
+
+      <section class="view hidden" id="view-planner">
+        <div class="section-intro"><div><p class="eyebrow">PLAN YOUR DAY</p><h3>Daily Planner</h3><p class="muted">Add realistic tasks and mark them complete as you go.</p></div><input type="date" id="plannerDate" class="date-input"></div>
+        <article class="panel">
+          <form id="taskForm" class="task-form">
+            <label>Task title<input id="taskTitle" required maxlength="100" placeholder="e.g. Fundamental Rights - Articles 12 to 18"></label>
+            <label>Subject<select id="taskSubject"></select></label>
+            <label>Planned time (minutes)<input id="taskMinutes" type="number" min="5" max="600" value="60" required></label>
+            <button class="primary" type="submit">+ Add task</button>
+          </form>
+          <div class="panel-head list-heading"><h3>My tasks</h3><span class="muted" id="taskCount">0 tasks</span></div>
+          <div id="plannerTasks" class="task-list"></div>
+        </article>
+      </section>
+
+      <section class="view hidden" id="view-subjects">
+        <div class="section-intro"><div><p class="eyebrow">SYLLABUS CONTROL</p><h3>Subject Tracker</h3><p class="muted">Update completion based on topics genuinely studied.</p></div></div>
+        <div id="subjectGrid" class="subject-grid"></div>
+      </section>
+
+      <section class="view hidden" id="view-timer">
+        <div class="timer-layout">
+          <article class="panel timer-panel">
+            <p class="eyebrow">FOCUS MODE</p><h3>Study Timer</h3>
+            <select id="timerSubject" class="timer-select"></select>
+            <div class="timer-display" id="timerDisplay">25:00</div>
+            <p class="muted" id="timerStatus">Ready when you are. One focused session at a time.</p>
+            <div class="timer-controls"><button class="primary" id="timerStart">Start</button><button class="secondary" id="timerReset">Reset</button></div>
+            <div class="timer-presets"><button data-minutes="25" class="preset active">25 min</button><button data-minutes="50" class="preset">50 min</button><button data-minutes="60" class="preset">60 min</button></div>
+          </article>
+          <article class="panel"><p class="eyebrow">SESSION GUIDANCE</p><h3>Make the session count</h3><ul class="guidance"><li>Keep one specific topic in front of you.</li><li>Keep your phone notifications away.</li><li>Take a short break after a focused block.</li><li>Record what you actually completed.</li></ul><div class="notice">Timer sessions are recorded when the countdown finishes. Use the planner to track syllabus tasks separately.</div></article>
+        </div>
+      </section>
+
+      <section class="view hidden" id="view-analytics">
+        <div class="section-intro"><div><p class="eyebrow">MEASURE CONSISTENCY</p><h3>Study Analytics</h3><p class="muted">A simple record of your recent study sessions.</p></div></div>
+        <div class="stats-grid"><article class="stat-card"><small>LAST 7 DAYS</small><strong id="weekHours">0h</strong><span class="stat-note">Focused study</span></article><article class="stat-card"><small>DAILY AVERAGE</small><strong id="dailyAverage">0h</strong><span class="stat-note">Across last 7 days</span></article><article class="stat-card"><small>SESSIONS</small><strong id="sessionCount">0</strong><span class="stat-note">Completed sessions</span></article></div>
+        <article class="panel"><div class="panel-head"><h3>Last 7 days</h3><span class="muted">Study hours</span></div><div id="weeklyChart" class="bar-chart"></div></article>
+        <article class="panel"><div class="panel-head"><h3>Recent sessions</h3></div><div id="recentSessions" class="task-list"></div></article>
+      </section>
+
+      <footer class="footer">UPSC COMMANDER <span>•</span> Built for consistent preparation <span>•</span> Your data, your progress</footer>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status"></div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
