@@ -266,6 +266,83 @@ $("weeklyBestDay").textContent =
 $("weeklyGoalsCompleted").textContent =
   completedGoals + "/7";
 
+ // MONTHLY STUDY REPORT
+const now = new Date();
+const currentYear = now.getFullYear();
+const currentMonth = now.getMonth();
+
+const monthSessions = sessions.filter(s => {
+  const d = new Date(s.date + "T00:00:00");
+
+  return (
+    d.getFullYear() === currentYear &&
+    d.getMonth() === currentMonth
+  );
+});
+
+const monthlyMinutes = monthSessions.reduce(
+  (total, s) => total + Number(s.minutes || 0),
+  0
+);
+
+const daysPassed = now.getDate();
+const daysInMonth = new Date(
+  currentYear,
+  currentMonth + 1,
+  0
+).getDate();
+
+const monthlyAverage = monthlyMinutes / daysPassed / 60;
+
+const monthlyBest = {};
+
+monthSessions.forEach(s => {
+  monthlyBest[s.date] =
+    (monthlyBest[s.date] || 0) + Number(s.minutes || 0);
+});
+
+const bestDate = Object.keys(monthlyBest).sort(
+  (a, b) => monthlyBest[b] - monthlyBest[a]
+)[0];
+
+const completedMonthlyTasks = tasks.filter(t => {
+  if (!t.completed) return false;
+
+  const d = new Date(t.completedAt || t.date);
+  return (
+    !isNaN(d) &&
+    d.getFullYear() === currentYear &&
+    d.getMonth() === currentMonth
+  );
+}).length;
+
+const monthlyGoalDays = Object.values(monthlyBest)
+  .filter(minutes => minutes >= dailyGoal * 60).length;
+
+const goalAchievement = Math.round(
+  (monthlyGoalDays / daysPassed) * 100
+);
+
+$("monthlyTotalHours").textContent =
+  (monthlyMinutes / 60).toFixed(1) + "h";
+
+$("monthlyAverageHours").textContent =
+  monthlyAverage.toFixed(1) + "h";
+
+$("monthlyCompletedTasks").textContent =
+  completedMonthlyTasks;
+
+$("monthlyGoalAchievement").textContent =
+  goalAchievement + "%";
+
+$("monthlyBestDay").textContent =
+  bestDate
+    ? new Date(bestDate + "T00:00:00").toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short"
+      })
+    : "--";
+
   renderTasks();
 }
 function renderSubjects(){$("subjectGrid").innerHTML=SUBJECTS.map(s=>{const p=subjectProgress[s]||0;return `<article class="subject-card"><div class="subject-top"><strong>${esc(s)}</strong><span>${p}%</span></div><div class="progress-track"><div class="progress-fill" style="width:${p}%"></div></div><small>Self-reported syllabus completion</small><div class="subject-actions"><button data-progress="${esc(s)}" data-delta="-5">−5%</button><button data-progress="${esc(s)}" data-delta="5">+5%</button><button data-progress="${esc(s)}" data-delta="10">+10%</button></div></article>`}).join("")}
