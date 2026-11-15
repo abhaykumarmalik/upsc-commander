@@ -378,10 +378,13 @@ userIdCell.addEventListener("click", async () => {
     tasksSnapshot.forEach((taskDoc) => {
       const task = taskDoc.data();
 
-      if (task.completed === true || task.status === "completed") {
-        completedTasks++;
-      }
-    });
+      if (
+  task.done === true ||
+  task.completed === true ||
+  task.status === "completed"
+) {
+  completedTasks++;
+}
 
     const pendingTasks = totalTasks - completedTasks;
     const completionRate = totalTasks > 0
