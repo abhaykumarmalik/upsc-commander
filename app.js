@@ -104,10 +104,89 @@ $("plannerDate").onchange=e=>{selectedDate=e.target.value||today();renderTasks()
 document.addEventListener("change",e=>{if(e.target.matches("[data-task-check]"))updateTask(e.target.dataset.taskCheck,{done:e.target.checked})});
 document.addEventListener("click",e=>{const del=e.target.closest("[data-task-delete]");if(del)removeTask(del.dataset.taskDelete);const prog=e.target.closest("[data-progress]");if(prog){const s=prog.dataset.progress;subjectProgress[s]=Math.max(0,Math.min(100,(subjectProgress[s]||0)+Number(prog.dataset.delta)));saveProgress().then(renderAll);}});
 document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>navigate(b.dataset.view));document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>navigate(b.dataset.go));
-$("timerStart").onclick=()=>{if(timerRunning){clearInterval(timerInterval);timerRunning=false;$("timerStart").textContent="Resume";$("timerStatus").textContent="Paused";return}timerRunning=true;if(!timerStartedAt)timerStartedAt=Date.now();$("timerStart").textContent="Pause";$("timerStatus").textContent="Stay with one task.";timerInterval=setInterval(async()=>{timerSeconds--;updateTimerDisplay();if(timerSeconds<=0){clearInterval(timerInterval);timerRunning=false;const mins=Math.max(1,Math.round((Date.now()-timerStartedAt)/60000));await recordSession($("timerSubject").value,mins);timerStartedAt=null;timerSeconds=25*60;updateTimerDisplay();$("timerStart").textContent="Start";$("timerStatus").textContent="Session complete. Take a short break.";toast("Focus session recorded!")}},1000)};
-function updateTimerDisplay(){$("timerDisplay").textContent=`${String(Math.floor(timerSeconds/60)).padStart(2,"0")}:${String(timerSeconds%60).padStart(2,"0")}`}
-$("timerReset").onclick=()=>{clearInterval(timerInterval);timerRunning=false;timerStartedAt=null;timerSeconds=25*60;updateTimerDisplay();$("timerStart").textContent="Start";$("timerStatus").textContent="Timer reset."};
-document.querySelectorAll("[data-minutes]").forEach(b=>b.onclick=()=>{clearInterval(timerInterval);timerRunning=false;timerStartedAt=null;timerSeconds=Number(b.dataset.minutes)*60;updateTimerDisplay();$("timerStart").textContent="Start";document.querySelectorAll(".preset").forEach(x=>x.classList.toggle("active",x===b))});
+$("timerStart").onclick = () => {
+  const limit = Number($("subjectTimeLimit").value);
+
+  if (!timerRunning && !timerStartedAt) {
+    if (limit < 5 || limit > 600 || !Number.isFinite(limit)) {
+      alert("Enter time between 5 and 600 minutes.");
+      return;
+    }
+    timerSeconds = limit * 60;
+    updateTimerDisplay();
+  }
+
+  if (timerRunning) {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    $("timerStart").textContent = "Resume";
+    return;
+  }
+
+  timerRunning = true;
+  if (!timerStartedAt) timerStartedAt = Date.now();
+
+  $("timerStart").textContent = "Pause";
+
+  timerInterval = setInterval(async () => {
+    timerSeconds--;
+    updateTimerDisplay();
+
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+
+      const mins = Math.max(1, Math.round(
+        (Date.now() - timerStartedAt) / 60000
+      ));
+
+      await recordSession($("timerSubject").value, mins);
+
+      timerStartedAt = null;
+      timerSeconds = 0;
+      updateTimerDisplay();
+
+      $("timerStart").textContent = "Start";
+      $("timerStatus").textContent = "Subject time completed!";
+
+      alert("Subject time completed!");
+      toast("Focus session recorded!");
+    }
+  }, 1000);
+};
+
+function updateTimerDisplay() {
+  $("timerDisplay").textContent =
+    `${String(Math.floor(timerSeconds / 60)).padStart(2, "0")}:${String(timerSeconds % 60).padStart(2, "0")}`;
+}
+
+$("timerReset").onclick = () => {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerStartedAt = null;
+
+  const limit = Number($("subjectTimeLimit").value);
+  timerSeconds = limit >= 5 && limit <= 600 ? limit * 60 : 25 * 60;
+
+  updateTimerDisplay();
+  $("timerStart").textContent = "Start";
+  $("timerStatus").textContent = "Timer reset.";
+};
+
+document.querySelectorAll("[data-minutes]").forEach(b => {
+  b.onclick = () => {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    timerStartedAt = null;
+
+    const minutes = Number(b.dataset.minutes);
+    $("subjectTimeLimit").value = minutes;
+    timerSeconds = minutes * 60;
+
+    updateTimerDisplay();
+    $("timerStart").textContent = "Start";
+  };
+});
 $("exportButton").onclick=()=>{const blob=new Blob([JSON.stringify({tasks,sessions,subjectProgress,exportedAt:new Date().toISOString()},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="upsc-commander-backup.json";a.click();URL.revokeObjectURL(a.href);toast("Backup downloaded")};
 
 if (firebaseReady()) {
