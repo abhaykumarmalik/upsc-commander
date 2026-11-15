@@ -103,3 +103,14 @@
     console.error(error);
   }
 });
+        document.getElementById("logout").onclick = async () => {
+      try {
+        await signOut(auth);
+        status.textContent = "Logged out successfully.";
+      } catch (error) {
+        status.textContent = "Logout Error: " + error.message;
+      }
+    };
+  </script>
+</body>
+</html>
