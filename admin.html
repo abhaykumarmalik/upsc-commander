@@ -425,6 +425,14 @@ userIdCell.addEventListener("click", async () => {
       <p>Completed Tasks: <strong>${completedTasks}</strong></p>
       <p>Pending Tasks: <strong>${pendingTasks}</strong></p>
       <p>Task Completion Rate: <strong>${completionRate}%</strong></p>
+      <div style="background:#334155; height:12px; border-radius:10px; overflow:hidden; margin:10px 0 20px;">
+  <div style="
+    width:${completionRate}%;
+    height:100%;
+    background:#22c55e;
+    border-radius:10px;
+  "></div>
+</div>
     `;
 
     heading.textContent = "User Study Details";
@@ -434,6 +442,9 @@ userInfo.innerHTML = `
   <p>User ID: <strong>${userDoc.id}</strong></p>
   <p>Email: <strong>${data.email || "Not available"}</strong></p>
   <p>Account Status: <strong>${String(data.accountStatus || "Active").trim()}</strong></p>
+  <p>Registration Date: <strong>${data.createdAt ? new Date(data.createdAt).toLocaleString("en-IN") : "Not available"}</strong></p>
+
+<p>Last Login: <strong>${data.lastLogin ? new Date(data.lastLogin).toLocaleString("en-IN") : "Not available"}</strong></p>
 `;
 
     const progressHeading = document.createElement("h4");
