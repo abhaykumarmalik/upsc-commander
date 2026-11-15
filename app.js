@@ -396,6 +396,98 @@ $("monthlyPerformanceChart").innerHTML =
     `;
   }).join("");
 
+// STUDY CALENDAR
+const calendarBox = $("studyCalendar");
+const calendarDetailsBox = $("calendarDetails");
+
+const calendarFirstDay = new Date(
+  currentYear,
+  currentMonth,
+  1
+).getDay();
+
+const calendarCells = [];
+
+const calendarWeekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+calendarWeekDays.forEach(day => {
+  calendarCells.push(`
+    <div style="text-align:center;padding:8px;color:#94a3b8;font-size:12px;">
+      ${day}
+    </div>
+  `);
+});
+
+for (let i = 0; i < calendarFirstDay; i++) {
+  calendarCells.push("<div></div>");
+}
+
+for (let day = 1; day <= daysInMonth; day++) {
+  const calendarDate = new Date(currentYear, currentMonth, day);
+  const calendarKey = calendarDate.toLocaleDateString("en-CA");
+
+  const studyMinutes = monthlyBest[calendarKey] || 0;
+  const studyHours = studyMinutes / 60;
+  const goalReached = studyMinutes >= dailyGoal * 60;
+
+  const cellColor = goalReached
+    ? "#166534"
+    : studyMinutes > 0
+      ? "#1e40af"
+      : "#1e293b";
+
+  calendarCells.push(`
+    <button
+      type="button"
+      data-calendar-date="${calendarKey}"
+      style="
+        width:100%;
+        min-height:48px;
+        border:1px solid #334155;
+        border-radius:8px;
+        background:${cellColor};
+        color:white;
+        cursor:pointer;
+        padding:5px;
+      "
+    >
+      <strong>${day}</strong>
+      <div style="font-size:10px;">
+        ${studyHours > 0 ? studyHours.toFixed(1) + "h" : "--"}
+      </div>
+    </button>
+  `);
+}
+
+calendarBox.style.display = "grid";
+calendarBox.style.gridTemplateColumns = "repeat(7, minmax(0, 1fr))";
+calendarBox.style.gap = "6px";
+calendarBox.innerHTML = calendarCells.join("");
+
+calendarBox.onclick = event => {
+  const selectedDate = event.target.closest("[data-calendar-date]");
+
+  if (!selectedDate) return;
+
+  const selectedKey = selectedDate.dataset.calendarDate;
+  const selectedMinutes = monthlyBest[selectedKey] || 0;
+  const selectedHours = (selectedMinutes / 60).toFixed(1);
+
+  const formattedDate = new Date(
+    selectedKey + "T00:00:00"
+  ).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+
+  calendarDetailsBox.textContent =
+    formattedDate +
+    " | Study Time: " + selectedHours +
+    " hours | Daily Goal: " +
+    (selectedMinutes >= dailyGoal * 60 ? "Completed" : "Not Completed");
+};
+
   renderTasks();
 }
 function renderSubjects(){$("subjectGrid").innerHTML=SUBJECTS.map(s=>{const p=subjectProgress[s]||0;return `<article class="subject-card"><div class="subject-top"><strong>${esc(s)}</strong><span>${p}%</span></div><div class="progress-track"><div class="progress-fill" style="width:${p}%"></div></div><small>Self-reported syllabus completion</small><div class="subject-actions"><button data-progress="${esc(s)}" data-delta="-5">−5%</button><button data-progress="${esc(s)}" data-delta="5">+5%</button><button data-progress="${esc(s)}" data-delta="10">+10%</button></div></article>`}).join("")}
