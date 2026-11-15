@@ -87,7 +87,9 @@
   const adminDoc = await getDocFromServer(
   doc(db, "admins", user.uid)
 );
-
+console.log("Logged UID:", user.uid);
+console.log("Admin document path:", "admins/" + user.uid);
+console.log("Document exists:", adminDoc.exists());
     const role = adminDoc.exists()
       ? adminDoc.data().role
       : "Document not found";
