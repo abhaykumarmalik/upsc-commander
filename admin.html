@@ -57,9 +57,8 @@
     import { getAuth, onAuthStateChanged, signOut } from
       "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    import { getFirestore, doc, getDoc } from
-      "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+    import { getFirestore, doc, getDocFromServer } from
+  "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     const firebaseConfig = {
       apiKey: "AIzaSyBYf0Xh3RSLlxOEDoEEnyTPvw6ZYf9RreI",
   authDomain: "upsc-commander.firebaseapp.com",
@@ -85,9 +84,9 @@
       }
 
      try {
-    const adminDoc = await getDoc(
-      doc(db, "admins", user.uid)
-    );
+  const adminDoc = await getDocFromServer(
+  doc(db, "admins", user.uid)
+);
 
     const role = adminDoc.exists()
       ? adminDoc.data().role
