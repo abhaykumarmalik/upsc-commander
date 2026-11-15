@@ -488,6 +488,93 @@ calendarBox.onclick = event => {
     (selectedMinutes >= dailyGoal * 60 ? "Completed" : "Not Completed");
 };
 
+// STUDY INSIGHTS & RECOMMENDATIONS
+
+// 1. Subject-wise study time
+const insightSubjectTotals = {};
+
+monthSessions.forEach(session => {
+  const subjectName = session.subject || "Other";
+
+  insightSubjectTotals[subjectName] =
+    (insightSubjectTotals[subjectName] || 0) +
+    Number(session.minutes || 0);
+});
+
+const insightTopSubject = Object.entries(insightSubjectTotals)
+  .sort((a, b) => b[1] - a[1])[0];
+
+$("insightTopSubject").textContent =
+  insightTopSubject ? insightTopSubject[0] : "--";
+
+// 2. Best study day
+const insightBestDate = Object.entries(monthlyBest)
+  .sort((a, b) => b[1] - a[1])[0];
+
+$("insightBestDay").textContent = insightBestDate
+  ? new Date(insightBestDate[0] + "T00:00:00")
+      .toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short"
+      })
+  : "--";
+
+// 3. Monthly goal completion
+const insightGoalsCount = Object.values(monthlyBest)
+  .filter(minutes => minutes >= dailyGoal * 60).length;
+
+$("insightGoalsCompleted").textContent = insightGoalsCount;
+
+// 4. Study consistency
+const insightActiveDays = Object.keys(monthlyBest)
+  .filter(date => monthlyBest[date] > 0).length;
+
+const insightConsistencyScore = Math.round(
+  (insightActiveDays / daysPassed) * 100
+);
+
+$("insightConsistency").textContent =
+  insightConsistencyScore + "%";
+
+// 5. Recommendations
+const insightRecommendations = [];
+
+if (insightConsistencyScore < 50) {
+  insightRecommendations.push(
+    "Try to maintain a more regular daily study routine."
+  );
+} else {
+  insightRecommendations.push(
+    "Good consistency! Keep following your study routine."
+  );
+}
+
+if (insightGoalsCount < 3) {
+  insightRecommendations.push(
+    "Focus on completing your daily study goal more regularly."
+  );
+} else {
+  insightRecommendations.push(
+    "You are completing your study goals. Keep it up."
+  );
+}
+
+if (!insightTopSubject) {
+  insightRecommendations.push(
+    "Record study sessions to get subject-wise insights."
+  );
+} else {
+  insightRecommendations.push(
+    "Your top subject this month is " +
+    insightTopSubject[0] + "."
+  );
+}
+
+$("studyRecommendations").innerHTML =
+  insightRecommendations.map(message =>
+    `<p class="muted">• ${message}</p>`
+  ).join("");
+
   renderTasks();
 }
 function renderSubjects(){$("subjectGrid").innerHTML=SUBJECTS.map(s=>{const p=subjectProgress[s]||0;return `<article class="subject-card"><div class="subject-top"><strong>${esc(s)}</strong><span>${p}%</span></div><div class="progress-track"><div class="progress-fill" style="width:${p}%"></div></div><small>Self-reported syllabus completion</small><div class="subject-actions"><button data-progress="${esc(s)}" data-delta="-5">−5%</button><button data-progress="${esc(s)}" data-delta="5">+5%</button><button data-progress="${esc(s)}" data-delta="10">+10%</button></div></article>`}).join("")}
