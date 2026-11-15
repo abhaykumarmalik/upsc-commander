@@ -5,12 +5,12 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, si
 import { getFirestore, doc, collection, getDocs, setDoc, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const FIREBASE_CONFIG = {
-  apiKey: "PASTE_YOUR_FIREBASE_API_KEY",
-  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
-  projectId: "PASTE_YOUR_PROJECT_ID",
-  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
-  messagingSenderId: "PASTE_YOUR_SENDER_ID",
-  appId: "PASTE_YOUR_APP_ID"
+  apiKey: "AIzaSyBYf0Xh3RSLlxOEDoEEnyTPvw6ZYf9RreI",
+  authDomain: "upsc-commander.firebaseapp.com",
+  projectId: "upsc-commander",
+  storageBucket: "upsc-commander.firebasestorage.app",
+  messagingSenderId: "621957377517",
+  appId: "1:621957377517:web:57060b9a2d26a7a7d48be4"
 };
 const SUBJECTS = ["Polity","History","Geography","Economy","Environment","Science & Technology","Current Affairs","CSAT","Ethics"];
 const $ = id => document.getElementById(id);
