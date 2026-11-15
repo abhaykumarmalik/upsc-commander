@@ -69,10 +69,8 @@ function showApp(){
   $("authScreen").classList.add("hidden");
   $("app").classList.remove("hidden");
 
-  if (demo) {
-    const data = readLocal();
-    dailyGoal = Number(data.dailyGoal) || 6;
-  }
+  const data = readLocal();
+dailyGoal = Number(data.dailyGoal) || 6;
 
   $("dailyGoalInput").value = dailyGoal;
 
