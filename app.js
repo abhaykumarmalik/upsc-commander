@@ -165,7 +165,6 @@ function renderDashboard(){
     previousDate = currentDate;
   });
 
-  const monthlyNow = new Date();
   const month = now.getMonth();
   const year = now.getFullYear();
 
@@ -266,13 +265,12 @@ $("weeklyBestDay").textContent =
 $("weeklyGoalsCompleted").textContent =
   completedGoals + "/7";
 
- // MONTHLY STUDY REPORT
-const monthlyNow = new Date();
-const currentYear = monthlyNow.getFullYear();
-const currentMonth = monthlyNow.getMonth();
+// MONTHLY STUDY REPORT
+const currentYear = year;
+const currentMonth = month;
+
 const monthSessions = sessions.filter(s => {
   const d = new Date(s.date + "T00:00:00");
-
   return (
     d.getFullYear() === currentYear &&
     d.getMonth() === currentMonth
