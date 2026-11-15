@@ -144,6 +144,7 @@ tbody tr:hover {
 </div>
 </div>
 
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script type="module">
 
     import { initializeApp } from
@@ -344,6 +345,49 @@ userIdCell.addEventListener("click", async () => {
   tasksHeading,
   tasksText
 );
+    
+    // Download PDF Report Button
+    const pdfButton = document.createElement("button");
+    pdfButton.textContent = "Download PDF Report";
+    pdfButton.style.cssText =
+      "padding:12px 20px; margin-top:15px; background:#2563eb; color:white; border:0; border-radius:8px; cursor:pointer;";
+
+    pdfButton.onclick = async () => {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF();
+
+      // Add UPSC COMMANDER Logo
+      const logo = new Image();
+      logo.src = "upsc-commander-logo.png";
+
+      try {
+        await new Promise((resolve, reject) => {
+          logo.onload = resolve;
+          logo.onerror = reject;
+        });
+
+        pdf.addImage(logo, "PNG", 75, 10, 60, 35);
+      } catch (error) {
+        console.log("Logo could not be loaded.");
+      }
+
+      pdf.setFontSize(18);
+      pdf.text("UPSC COMMANDER", 20, 60);
+
+      pdf.setFontSize(12);
+      pdf.text("Student Study Report", 20, 72);
+      pdf.text("User ID: " + userDoc.id, 20, 85);
+      pdf.text("Email: " + (data.email || "Not available"), 20, 95);
+      pdf.text("Total Study Hours: " + totalHours, 20, 110);
+      pdf.text("Focus Sessions: " + sessionsSnapshot.size, 20, 120);
+      pdf.text("Completed Tasks: " + completedTasks, 20, 130);
+      pdf.text("Pending Tasks: " + pendingTasks, 20, 140);
+
+      pdf.save("UPSC-Commander-Student-Report.pdf");
+    };
+
+    details.appendChild(pdfButton);
+
 
   } catch (error) {
     details.textContent = "Unable to load details: " + error.message;
