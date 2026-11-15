@@ -340,6 +340,62 @@ $("monthlyBestDay").textContent =
       })
     : "--";
 
+// MONTHLY PERFORMANCE CHART
+const monthlyChartBars = [];
+
+let monthlyMaxHours = 1;
+
+for (let day = 1; day <= daysInMonth; day++) {
+  const chartDate = new Date(currentYear, currentMonth, day);
+
+  const dateKey = chartDate.toLocaleDateString("en-CA");
+
+  const minutes = monthlyBest[dateKey] || 0;
+  const hours = minutes / 60;
+
+  monthlyMaxHours = Math.max(monthlyMaxHours, hours);
+
+  monthlyChartBars.push({
+    day,
+    hours
+  });
+}
+
+$("monthlyPerformanceChart").innerHTML =
+  monthlyChartBars.map(item => {
+    const barHeight = Math.max(
+      2,
+      (item.hours / monthlyMaxHours) * 150
+    );
+
+    return `
+      <div style="
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:flex-end;
+        min-width:24px;
+        flex:1;
+        gap:6px;
+      ">
+        <span style="font-size:10px;color:#94a3b8;">
+          ${item.hours.toFixed(1)}h
+        </span>
+
+        <div style="
+          height:${barHeight}px;
+          width:14px;
+          background:#38bdf8;
+          border-radius:5px 5px 0 0;
+        "></div>
+
+        <span style="font-size:10px;color:#94a3b8;">
+          ${item.day}
+        </span>
+      </div>
+    `;
+  }).join("");
+
   renderTasks();
 }
 function renderSubjects(){$("subjectGrid").innerHTML=SUBJECTS.map(s=>{const p=subjectProgress[s]||0;return `<article class="subject-card"><div class="subject-top"><strong>${esc(s)}</strong><span>${p}%</span></div><div class="progress-track"><div class="progress-fill" style="width:${p}%"></div></div><small>Self-reported syllabus completion</small><div class="subject-actions"><button data-progress="${esc(s)}" data-delta="-5">−5%</button><button data-progress="${esc(s)}" data-delta="5">+5%</button><button data-progress="${esc(s)}" data-delta="10">+10%</button></div></article>`}).join("")}
