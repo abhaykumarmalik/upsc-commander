@@ -119,6 +119,7 @@ tbody tr:hover {
   <table style="width:100%; border-collapse:collapse; color:white;">
     <thead>
       <th>Account Status</th>
+      <th>Action</th>
       <tr>
         <th>User ID</th>
         <th>Email</th>
@@ -162,6 +163,7 @@ tbody tr:hover {
       doc,
       getDocFromServer,
       collection,
+      updateDoc,
       getDocs
     } from
       "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -238,7 +240,7 @@ console.log("Admin Auth User:", user);
           usersSnapshot.forEach((userDoc) => {
             const data = userDoc.data();
             const statusCell = document.createElement("td");
-statusCell.textContent = "Active";
+statusCell.textContent = data.accountStatus || "Active";
 
             const row = document.createElement("tr");
 
@@ -408,12 +410,57 @@ userIdCell.addEventListener("click", async () => {
               ? new Date(data.lastLogin).toLocaleString("en-IN")
               : "Not available";
 
+            
+const actionCell = document.createElement("td");
+
+const actionButton = document.createElement("button");
+
+const currentStatus = data.accountStatus || "Active";
+
+actionButton.textContent =
+  currentStatus === "Suspended" ? "Reactivate" : "Suspend";
+
+actionButton.style.cssText =
+  "padding:8px 12px; border:0; border-radius:6px; cursor:pointer;";
+
+
+actionButton.onclick = async () => {
+  const newStatus =
+    currentStatus === "Suspended" ? "Active" : "Suspended";
+
+  const confirmed = confirm(
+    "Are you sure you want to set this user as " + newStatus + "?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    await updateDoc(
+      doc(db, "users", userDoc.id),
+      { accountStatus: newStatus }
+    );
+
+    statusCell.textContent = newStatus;
+    actionButton.textContent =
+      newStatus === "Suspended" ? "Reactivate" : "Suspend";
+
+    alert("User status updated successfully.");
+
+  } catch (error) {
+    alert("Update failed: " + error.message);
+  }
+};
+
+
+actionCell.appendChild(actionButton);
+
             row.append(
   userIdCell,
   emailCell,
   createdCell,
   loginCell,
-  statusCell
+  statusCell,
+  actionCell
             );
 
             
