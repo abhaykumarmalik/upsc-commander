@@ -507,12 +507,30 @@ userInfo.innerHTML = `
     tasksHeading.textContent = "Daily Tasks";
 
     const tasksText = document.createElement("pre");
+      const task = taskDoc.data();
+  const subject = task.subject || "Other";
+
+  if (!subjectStats[subject]) {
+    subjectStats[subject] = {
+      totalTasks: 0,
+      completedTasks: 0,
+      plannedMinutes: 0
+    };
+  }
+
+  subjectStats[subject].totalTasks++;
+  subjectStats[subject].plannedMinutes += Number(task.minutes || 0);
+
+  if (
+    task.done === true ||
+    task.completed === true ||
+    task.status === "completed"
+  ) {
+    subjectStats[subject].completedTasks++;
+  }
+});
+
     // Subject-wise Study Report
-
-const subjectHeading = document.createElement("h4");
-subjectHeading.textContent = "Subject-wise Study Report";
-
-const subjectText = document.createElement("pre");
 const subjectStats = {};
 
 tasksSnapshot.forEach((taskDoc) => {
@@ -539,6 +557,21 @@ tasksSnapshot.forEach((taskDoc) => {
   }
 });
 
+const subjectHeading = document.createElement("h4");
+subjectHeading.textContent = "Subject-wise Study Report";
+
+const subjectText = document.createElement("pre");
+
+subjectText.textContent = Object.entries(subjectStats).length
+  ? Object.entries(subjectStats).map(([subject, stats]) => {
+      return `${subject}
+Total Tasks: ${stats.totalTasks}
+Completed: ${stats.completedTasks}
+Pending: ${stats.totalTasks - stats.completedTasks}
+Planned Time: ${stats.plannedMinutes} minutes`;
+    }).join("\n\n")
+  : "No subject-wise tasks found.";
+   
 subjectText.textContent = Object.entries(subjectStats).length
   ? Object.entries(subjectStats).map(([subject, stats]) => {
       return `${subject}
