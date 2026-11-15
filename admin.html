@@ -85,7 +85,7 @@
 
      try {
   const adminDoc = await getDocFromServer(
-  doc(db, "admins", user.uid)
+  doc(db, "admin", user.uid)
 );
 console.log("Logged UID:", user.uid);
 console.log("Admin document path:", "admins/" + user.uid);
