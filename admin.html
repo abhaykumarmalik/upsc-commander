@@ -410,20 +410,6 @@ userIdCell.addEventListener("click", async () => {
   }
 });
 
-
-            const emailCell = document.createElement("td");
-            emailCell.textContent = data.email || "Not available";
-
-            const createdCell = document.createElement("td");
-            createdCell.textContent = data.createdAt
-              ? new Date(data.createdAt).toLocaleString("en-IN")
-              : "Not available";
-
-            const loginCell = document.createElement("td");
-            loginCell.textContent = data.lastLogin
-              ? new Date(data.lastLogin).toLocaleString("en-IN")
-              : "Not available";
-
             
 const actionCell = document.createElement("td");
 
