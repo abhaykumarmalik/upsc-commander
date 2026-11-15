@@ -141,6 +141,8 @@ if (firebaseReady()) {
         const accountStatus = userSnap.data().accountStatus;
 
         console.log("ACCOUNT STATUS:", accountStatus);
+        console.log("CURRENT USER UID:", u.uid);
+console.log("PROFILE DATA:", userSnap.data());
 
         if (accountStatus !== "Active") {
           user = null;
