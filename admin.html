@@ -133,6 +133,15 @@ tbody tr:hover {
       </tr>
     </tbody>
   </table>
+  <div id="userDetails"
+     style="margin-top:25px; padding:20px;
+     background:#111c30; border-radius:12px; color:white;">
+
+  <h3>User Study Details</h3>
+
+  <p>Select a user to view their study progress and daily tasks.</p>
+
+</div>
 </div>
 
   <script type="module">
@@ -234,6 +243,67 @@ statusCell.textContent = "Active";
 
             const userIdCell = document.createElement("td");
             userIdCell.textContent = userDoc.id;
+            
+userIdCell.style.color = "#38bdf8";
+userIdCell.style.cursor = "pointer";
+userIdCell.title = "Click to view user details";
+
+userIdCell.addEventListener("click", async () => {
+  const details = document.getElementById("userDetails");
+
+  details.innerHTML = "<h3>Loading User Details...</h3>";
+
+  try {
+    // Get Study Progress
+    const progressDoc = await getDocFromServer(
+      doc(db, "users", userDoc.id, "settings", "progress")
+    );
+
+    // Get Daily Tasks
+    const tasksSnapshot = await getDocs(
+      collection(db, "users", userDoc.id, "tasks")
+    );
+
+    const progress = progressDoc.exists()
+      ? JSON.stringify(progressDoc.data(), null, 2)
+      : "No study progress found.";
+
+    const tasks = tasksSnapshot.empty
+      ? "No daily tasks found."
+      : tasksSnapshot.docs.map(task =>
+          JSON.stringify(task.data(), null, 2)
+        ).join("\n\n");
+
+    details.innerHTML = "";
+
+    const heading = document.createElement("h3");
+    heading.textContent = "User Study Details";
+
+    const progressHeading = document.createElement("h4");
+    progressHeading.textContent = "Study Progress";
+
+    const progressText = document.createElement("pre");
+    progressText.textContent = progress;
+
+    const tasksHeading = document.createElement("h4");
+    tasksHeading.textContent = "Daily Tasks";
+
+    const tasksText = document.createElement("pre");
+    tasksText.textContent = tasks;
+
+    details.append(
+      heading,
+      progressHeading,
+      progressText,
+      tasksHeading,
+      tasksText
+    );
+
+  } catch (error) {
+    details.textContent = "Unable to load details: " + error.message;
+  }
+});
+
 
             const emailCell = document.createElement("td");
             emailCell.textContent = data.email || "Not available";
