@@ -510,6 +510,10 @@ Completion Rate: ${((stats.completedTasks / stats.totalTasks) * 100).toFixed(1)}
 Planned Time: ${stats.plannedMinutes} minutes`;
     }).join("\n\n")
   : "No subject-wise tasks found.";
+    const sessionsHeading = document.createElement("h4");
+sessionsHeading.textContent = "Focus Session Records";
+
+const sessionsText = document.createElement("pre");
 sessionsText.textContent = sessionsSnapshot.empty
   ? "No focus sessions found."
   : sessionsSnapshot.docs.map(sessionDoc =>
