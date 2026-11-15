@@ -108,11 +108,13 @@ tbody tr:hover {
 <div style="overflow-x:auto;">
   <table style="width:100%; border-collapse:collapse; color:white;">
     <thead>
+      <th>Account Status</th>
       <tr>
         <th>User ID</th>
         <th>Email</th>
         <th>Registration Date</th>
         <th>Last Login</th>
+        <th>Account Status</th>
       </tr>
     </thead>
     <tbody id="usersList">
@@ -215,6 +217,8 @@ console.log("Admin Auth User:", user);
         } else {
           usersSnapshot.forEach((userDoc) => {
             const data = userDoc.data();
+            const statusCell = document.createElement("td");
+statusCell.textContent = "Active";
 
             const row = document.createElement("tr");
 
@@ -235,10 +239,11 @@ console.log("Admin Auth User:", user);
               : "Not available";
 
             row.append(
-              userIdCell,
-              emailCell,
-              createdCell,
-              loginCell
+  userIdCell,
+  emailCell,
+  createdCell,
+  loginCell,
+  statusCell
             );
 
             usersList.appendChild(row);
