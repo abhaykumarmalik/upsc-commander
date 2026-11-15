@@ -55,6 +55,7 @@ function navigate(v){view=v;document.querySelectorAll(".view").forEach(el=>el.cl
 function setAuthMode(m){authMode=m;$("loginTab").classList.toggle("active",m==="login");$("registerTab").classList.toggle("active",m==="register");$("authSubmit").textContent=m==="login"?"Sign in":"Create account";$("password").autocomplete=m==="login"?"current-password":"new-password";$("authMessage").textContent=""}
 $("loginTab").onclick=()=>setAuthMode("login");$("registerTab").onclick=()=>setAuthMode("register");
 
+
 $("authForm").onsubmit = async e => {
   e.preventDefault();
   $("authMessage").textContent = "";
@@ -75,45 +76,26 @@ $("authForm").onsubmit = async e => {
       credential = await createUserWithEmailAndPassword(
         auth, email, password
       );
+
+      const account = credential.user;
+
+      await setDoc(doc(db, "users", account.uid), {
+        uid: account.uid,
+        email: account.email || "",
+        createdAt: account.metadata.creationTime || "",
+        lastLogin: account.metadata.lastSignInTime || "",
+        accountStatus: "Active"
+      });
+
     } else {
       credential = await signInWithEmailAndPassword(
         auth, email, password
       );
     }
 
-    try {
-  const email = $("email").value.trim();
-  const password = $("password").value;
-
-  let credential;
-
-  if (authMode === "register") {
-    credential = await createUserWithEmailAndPassword(
-      auth, email, password
-    );
-
-    const account = credential.user;
-
-    await setDoc(doc(db, "users", account.uid), {
-      uid: account.uid,
-      email: account.email || "",
-      createdAt: account.metadata.creationTime || "",
-      lastLogin: account.metadata.lastSignInTime || "",
-      accountStatus: "Active"
-    });
-
-  } else {
-    credential = await signInWithEmailAndPassword(
-      auth, email, password
-    );
-
-    const account = credential.user;
-    
+  } catch (err) {
+    $("authMessage").textContent = err.message;
   }
-
-} catch (err) {
-  $("authMessage").textContent = err.message;
-}
 };
 
 $("logoutButton").onclick=async()=>{if(!demo&&auth)await signOut(auth);user=null;demo=false;showAuth()};
