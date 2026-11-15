@@ -45,11 +45,12 @@
     </div>
 
     <div class="panel">
-      <h2>User Management</h2>
-      <p>Users dashboard will be added in the next step.</p>
-    </div>
+  <h2>User Management</h2>
+  <p>Total Registered Users: <strong id="totalUsers">0</strong></p>
+  <div id="usersList">
+    Loading users...
   </div>
-
+</div>
   <script type="module">
     import { initializeApp, getApps } from
       "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -83,11 +84,47 @@
 
     const status = document.getElementById("status");
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        status.textContent = "Please login first.";
-        return;
-      }
+    
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    status.textContent = "Please login first.";
+    return;
+  }
+
+  try {
+    const adminDoc = await getDocFromServer(
+      doc(db, "admin", user.uid)
+    );
+
+    if (!adminDoc.exists() || adminDoc.data().role !== "admin") {
+      status.textContent = "Access denied: Not an admin.";
+      return;
+    }
+
+    status.textContent = "Admin verified successfully.";
+
+    const usersSnapshot = await getDocs(
+      collection(db, "users")
+    );
+
+    document.getElementById("totalUsers").textContent =
+      usersSnapshot.size;
+
+    const usersList = document.getElementById("usersList");
+    usersList.innerHTML = "";
+
+    usersSnapshot.forEach((userDoc) => {
+      const item = document.createElement("p");
+      item.textContent = "User ID: " + userDoc.id;
+      usersList.appendChild(item);
+    });
+
+  } catch (error) {
+    status.textContent = "Firebase Error: " + error.message;
+    console.error(error);
+  }
+});
+
 
      try {
   const adminDoc = await getDocFromServer(
