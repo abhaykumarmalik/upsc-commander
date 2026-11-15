@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UPSC COMMANDER | Admin</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 25px;
+      background: #0b1120;
+      color: #e5e7eb;
+      font-family: Arial, sans-serif;
+    }
+    .container { max-width: 900px; margin: auto; }
+    h1 { color: #60a5fa; }
+    .panel {
+      background: #172033;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: 0;
+      padding: 12px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #status { color: #fbbf24; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>UPSC COMMANDER</h1>
+    <p>Administrator Dashboard</p>
+
+    <div class="panel">
+      <h2>Admin Access</h2>
+      <p id="status">Checking account...</p>
+      <button id="logout">Logout</button>
+    </div>
+
+    <div class="panel">
+      <h2>User Management</h2>
+      <p>Users dashboard will be added in the next step.</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp, getApps } from
+      "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+    import { getAuth, onAuthStateChanged, signOut } from
+      "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    import { getFirestore, doc, getDoc } from
+      "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBYf0Xh3RSLlxOEDoEEnyTPvw6ZYf9RreI",
+  authDomain: "upsc-commander.firebaseapp.com",
+  projectId: "upsc-commander",
+  storageBucket: "upsc-commander.firebasestorage.app",
+  messagingSenderId: "621957377517",
+  appId: "1:621957377517:web:57060b9a2d26a7a7d48be4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const status = document.getElementById("status");
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        status.textContent = "Please login first.";
+        return;
+      }
+
+      try {
+        const adminDoc = await getDoc(
+          doc(db, "admins", user.uid)
+        );
+
+        if (adminDoc.exists() &&
+            adminDoc.data().role === "admin") {
+          status.textContent = "Admin access verified.";
+        } else {
+          status.textContent = "Access denied: Not an admin.";
+        }
+      } catch (error) {
+        status.textContent = "Error checking admin access.";
+        console.error(error);
+      }
+    });
+
+    document.getElementById("logout").onclick = () => {
+      signOut(auth);
+    };
+  </script>
+</body>
+</html>
