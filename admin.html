@@ -291,7 +291,27 @@ document.getElementById("suspendedUsers").textContent = suspendedCount;
 document.getElementById("todayRegistrations").textContent = todayCount;
 
 // Study hours will be connected in the next step
-document.getElementById("totalStudyHours").textContent = "0";
+// Calculate Total Study Hours
+let totalStudyMinutes = 0;
+
+for (const userDoc of usersSnapshot.docs) {
+  const sessionsSnapshot = await getDocs(
+    collection(db, "users", userDoc.id, "sessions")
+  );
+
+  sessionsSnapshot.forEach((sessionDoc) => {
+    const session = sessionDoc.data();
+
+    totalStudyMinutes += Number(
+      session.minutes || session.durationMinutes || 0
+    );
+  });
+}
+
+const totalStudyHours = (totalStudyMinutes / 60).toFixed(1);
+
+document.getElementById("totalStudyHours").textContent =
+  totalStudyHours;
         usersList.innerHTML = "";
 
         if (usersSnapshot.empty) {
