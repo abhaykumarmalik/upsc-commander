@@ -12,7 +12,17 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "621957377517",
   appId: "1:621957377517:web:57060b9a2d26a7a7d48be4"
 };
-const SUBJECTS = ["Polity","History","Geography","Economy","Environment","Science & Technology","Current Affairs","CSAT","Ethics"];
+const SUBJECTS = [
+  "Polity",
+  "History",
+  "Geography",
+  "Economy",
+  "Environment",
+  "Science & Technology",
+  "Current Affairs",
+  "CSAT",
+  "Ethics"
+];
 const $ = id => document.getElementById(id);
 const today = () => new Date().toLocaleDateString("en-CA");
 let user = null, demo = false, auth = null, db = null, taskUnsub = null;
@@ -49,7 +59,25 @@ function taskHTML(t){return `<div class="task-row ${t.done?"done":""}"><input cl
 function renderTasks(){const list=dayTasks();$("plannerTasks").innerHTML=list.length?list.map(taskHTML).join(""):`<div class="empty">No tasks for this date yet. Add your first task above.</div>`;$("dashboardTasks").innerHTML=tasks.filter(t=>t.date===today()).slice(0,5).map(taskHTML).join("")||`<div class="empty">No priorities added for today.</div>`;$("taskCount").textContent=`${list.filter(t=>t.done).length}/${list.length} completed`;$("statTasks").textContent=`${tasks.filter(t=>t.date===today()&&t.done).length} / ${tasks.filter(t=>t.date===today()).length}`}
 function renderDashboard(){const mins=minutesToday(),hours=mins/60,pct=Math.min(100,mins/360*100);$("todayHours").textContent=hours.toFixed(1)+"h";$("targetRing").style.background=`conic-gradient(var(--green) ${pct*3.6}deg,#254456 0deg)`;$("statStudy").textContent=fmtMinutes(mins);const total=Object.values(subjectProgress).reduce((a,b)=>a+b,0);$("statSyllabus").textContent=Math.round(total/SUBJECTS.length)+"%";renderTasks()}
 function renderSubjects(){$("subjectGrid").innerHTML=SUBJECTS.map(s=>{const p=subjectProgress[s]||0;return `<article class="subject-card"><div class="subject-top"><strong>${esc(s)}</strong><span>${p}%</span></div><div class="progress-track"><div class="progress-fill" style="width:${p}%"></div></div><small>Self-reported syllabus completion</small><div class="subject-actions"><button data-progress="${esc(s)}" data-delta="-5">−5%</button><button data-progress="${esc(s)}" data-delta="5">+5%</button><button data-progress="${esc(s)}" data-delta="10">+10%</button></div></article>`}).join("")}
-function renderAnalytics(){const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const key=d.toLocaleDateString("en-CA");const mins=sessions.filter(s=>s.date===key).reduce((a,s)=>a+s.minutes,0);days.push({key,label:d.toLocaleDateString(undefined,{weekday:"short"}),mins})}const total=days.reduce((a,d)=>a+d.mins,0);$("weekHours").textContent=(total/60).toFixed(1)+"h";$("dailyAverage").textContent=(total/7/60).toFixed(1)+"h";$("sessionCount").textContent=days.reduce((a,d)=>a+sessions.filter(s=>s.date===d.key).length,0);$("weeklyChart").innerHTML=days.map(d=>`<div class="bar-item"><b>${(d.mins/60).toFixed(1)}h</b><div class="bar" style="height:${Math.max(3,d.mins/Math.max(360,...days.map(x=>x.mins))*100)}%"></div><small>${d.label}</small></div>`).join("");$("recentSessions").innerHTML=sessions.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(s=>`<div class="task-row"><div class="task-info"><div class="task-name">${esc(s.subject)}</div><div class="task-meta">${esc(s.date)} · ${s.minutes} minutes</div></div></div>`).join("")||`<div class="empty">No completed sessions yet.</div>`}
+function renderAnalytics(){const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const key=d.toLocaleDateString("en-CA");const mins=sessions.filter(s=>s.date===key).reduce((a,s)=>a+s.minutes,0);days.push({key,label:d.toLocaleDateString(undefined,{weekday:"short"}),mins})}const total=days.reduce((a,d)=>a+d.mins,0);$("weekHours").textContent=(total/60).toFixed(1)+"h";$("dailyAverage").textContent=(total/7/60).toFixed(1)+"h";$("sessionCount").textContent=days.reduce((a,d)=>a+sessions.filter(s=>s.date===d.key).length,0);$("weeklyChart").innerHTML=days.map(d=>`<div class="bar-item"><b>${(d.mins/60).toFixed(1)}h</b><div class="bar" style="height:${Math.max(3,d.mins/Math.max(360,...days.map(x=>x.mins))*100)}%"></div><small>${d.label}</small></div>`).join("");
+                           const subjectTotals = {};
+
+sessions.forEach(s => {
+  const subject = s.subject || "Other";
+  subjectTotals[subject] = (subjectTotals[subject] || 0) + Number(s.minutes || 0);
+});
+
+const subjectEntries = Object.entries(subjectTotals)
+  .sort((a, b) => b[1] - a[1]);
+
+$("subjectAnalytics").innerHTML = subjectEntries.map(([subject, minutes]) => `
+  <div class="task-row">
+    <div class="task-info">
+      <div class="task-name">${esc(subject)}</div>
+      <div class="task-meta">${(minutes / 60).toFixed(1)} hours studied</div>
+    </div>
+  </div>
+`).join("") || `<div class="empty">No subject study data yet.</div>`;$("recentSessions").innerHTML=sessions.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(s=>`<div class="task-row"><div class="task-info"><div class="task-name">${esc(s.subject)}</div><div class="task-meta">${esc(s.date)} · ${s.minutes} minutes</div></div></div>`).join("")||`<div class="empty">No completed sessions yet.</div>`}
 function renderAll(){renderDashboard();renderSubjects();renderAnalytics();$("plannerDate").value=selectedDate;$("todayLabel").textContent=dateLabel(today()).toUpperCase()}
 function navigate(v){view=v;document.querySelectorAll(".view").forEach(el=>el.classList.add("hidden"));$("view-"+v).classList.remove("hidden");document.querySelectorAll(".nav-item[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===v));$("pageTitle").textContent=({dashboard:"Dashboard",planner:"Daily Planner",subjects:"Subject Tracker",timer:"Study Timer",analytics:"Analytics"})[v]}
 function setAuthMode(m){authMode=m;$("loginTab").classList.toggle("active",m==="login");$("registerTab").classList.toggle("active",m==="register");$("authSubmit").textContent=m==="login"?"Sign in":"Create account";$("password").autocomplete=m==="login"?"current-password":"new-password";$("authMessage").textContent=""}
