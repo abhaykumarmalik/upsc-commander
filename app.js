@@ -575,6 +575,49 @@ $("studyRecommendations").innerHTML =
     `<p class="muted">• ${message}</p>`
   ).join("");
 
+// UPSC SUBJECT PERFORMANCE COMPARISON
+const subjectPerformanceTotals = {};
+
+monthSessions.forEach(session => {
+  const subject = session.subject || "Other";
+  const minutes = Number(session.minutes || session.durationMinutes || 0);
+
+  subjectPerformanceTotals[subject] =
+    (subjectPerformanceTotals[subject] || 0) + minutes;
+});
+
+const subjectPerformanceList = Object.entries(subjectPerformanceTotals)
+  .sort((a, b) => b[1] - a[1]);
+
+const subjectPerformanceMax = Math.max(
+  ...subjectPerformanceList.map(item => item[1]),
+  1
+);
+
+if (subjectPerformanceList.length === 0) {
+  $("subjectPerformanceComparison").innerHTML =
+    '<p class="muted">No subject study data available this month.</p>';
+} else {
+  $("subjectPerformanceComparison").innerHTML =
+    subjectPerformanceList.map(([subject, minutes]) => {
+      const hours = (minutes / 60).toFixed(1);
+      const percentage = (minutes / subjectPerformanceMax) * 100;
+
+      return `
+        <div style="margin:15px 0;">
+          <div style="display:flex; justify-content:space-between; gap:10px;">
+            <strong>${subject}</strong>
+            <span class="muted">${hours} hours</span>
+          </div>
+
+          <div style="height:10px; background:#1e293b; border-radius:10px; overflow:hidden; margin-top:8px;">
+            <div style="height:100%; width:${percentage}%; background:#38bdf8; border-radius:10px;"></div>
+          </div>
+        </div>
+      `;
+    }).join("");
+}
+
   renderTasks();
 }
 function renderSubjects(){$("subjectGrid").innerHTML=SUBJECTS.map(s=>{const p=subjectProgress[s]||0;return `<article class="subject-card"><div class="subject-top"><strong>${esc(s)}</strong><span>${p}%</span></div><div class="progress-track"><div class="progress-fill" style="width:${p}%"></div></div><small>Self-reported syllabus completion</small><div class="subject-actions"><button data-progress="${esc(s)}" data-delta="-5">−5%</button><button data-progress="${esc(s)}" data-delta="5">+5%</button><button data-progress="${esc(s)}" data-delta="10">+10%</button></div></article>`}).join("")}
