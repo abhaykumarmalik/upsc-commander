@@ -57,7 +57,82 @@ async function removeTask(id){tasks=tasks.filter(t=>t.id!==id);if(demo)writeLoca
 async function recordSession(subject,minutes){const item={subject,minutes,date:today(),createdAt:Date.now()};if(demo){sessions.unshift({id:crypto.randomUUID(),...item});writeLocal()}else{const r=await addDoc(collection(db,"users",user.uid,"sessions"),item);sessions.unshift({id:r.id,...item})}renderAll()}
 function taskHTML(t){return `<div class="task-row ${t.done?"done":""}"><input class="task-check" type="checkbox" data-task-check="${esc(t.id)}" ${t.done?"checked":""}><div class="task-info"><div class="task-name">${esc(t.title)}</div><div class="task-meta">${esc(t.subject)} · ${t.minutes} min · ${t.date===today()?"Today":esc(t.date)}</div></div><button class="task-delete" title="Delete task" data-task-delete="${esc(t.id)}">×</button></div>`}
 function renderTasks(){const list=dayTasks();$("plannerTasks").innerHTML=list.length?list.map(taskHTML).join(""):`<div class="empty">No tasks for this date yet. Add your first task above.</div>`;$("dashboardTasks").innerHTML=tasks.filter(t=>t.date===today()).slice(0,5).map(taskHTML).join("")||`<div class="empty">No priorities added for today.</div>`;$("taskCount").textContent=`${list.filter(t=>t.done).length}/${list.length} completed`;$("statTasks").textContent=`${tasks.filter(t=>t.date===today()&&t.done).length} / ${tasks.filter(t=>t.date===today()).length}`}
-function renderDashboard(){const mins=minutesToday(),hours=mins/60,pct=Math.min(100,mins/360*100);$("todayHours").textContent=hours.toFixed(1)+"h";$("targetRing").style.background=`conic-gradient(var(--green) ${pct*3.6}deg,#254456 0deg)`;$("statStudy").textContent=fmtMinutes(mins);const total=Object.values(subjectProgress).reduce((a,b)=>a+b,0);$("statSyllabus").textContent=Math.round(total/SUBJECTS.length)+"%";renderTasks()}
+function renderDashboard(){
+  const mins = minutesToday();
+  const hours = mins / 60;
+  const pct = Math.min(100, mins / 360 * 100);
+
+  $("todayHours").textContent = hours.toFixed(1) + "h";
+  $("targetRing").style.background =
+    `conic-gradient(var(--green) ${pct * 3.6}deg,#254456 0deg)`;
+
+  $("statStudy").textContent = fmtMinutes(mins);
+
+  const total = Object.values(subjectProgress).reduce((a,b) => a+b, 0);
+  $("statSyllabus").textContent =
+    Math.round(total / SUBJECTS.length) + "%";
+
+  const studyDates = [...new Set(
+    sessions.map(s => s.date).filter(Boolean)
+  )].sort();
+
+  const todayDate = today();
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayKey = yesterday.toLocaleDateString("en-CA");
+
+  let currentStreak = 0;
+  let checkDate = new Date();
+
+  if (!studyDates.includes(todayDate) &&
+      !studyDates.includes(yesterdayKey)) {
+    currentStreak = 0;
+  } else {
+    if (!studyDates.includes(todayDate)) {
+      checkDate.setDate(checkDate.getDate() - 1);
+    }
+
+    while (studyDates.includes(checkDate.toLocaleDateString("en-CA"))) {
+      currentStreak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    }
+  }
+
+  let longestStreak = 0;
+  let runningStreak = 0;
+  let previousDate = null;
+
+  studyDates.forEach(date => {
+    const currentDate = new Date(date + "T12:00:00");
+
+    if (previousDate) {
+      const difference =
+        (currentDate - previousDate) / 86400000;
+
+      runningStreak = difference === 1 ? runningStreak + 1 : 1;
+    } else {
+      runningStreak = 1;
+    }
+
+    longestStreak = Math.max(longestStreak, runningStreak);
+    previousDate = currentDate;
+  });
+
+  const now = new Date();
+  const month = now.getMonth();
+  const year = now.getFullYear();
+
+  const monthlyDays = studyDates.filter(date => {
+    const d = new Date(date + "T12:00:00");
+    return d.getMonth() === month && d.getFullYear() === year;
+  }).length;
+
+  $("currentStreak").textContent = currentStreak + " days";
+  $("longestStreak").textContent = longestStreak + " days";
+  $("monthlyConsistency").textContent = monthlyDays + " days";
+
+  renderTasks();
+}
 function renderSubjects(){$("subjectGrid").innerHTML=SUBJECTS.map(s=>{const p=subjectProgress[s]||0;return `<article class="subject-card"><div class="subject-top"><strong>${esc(s)}</strong><span>${p}%</span></div><div class="progress-track"><div class="progress-fill" style="width:${p}%"></div></div><small>Self-reported syllabus completion</small><div class="subject-actions"><button data-progress="${esc(s)}" data-delta="-5">−5%</button><button data-progress="${esc(s)}" data-delta="5">+5%</button><button data-progress="${esc(s)}" data-delta="10">+10%</button></div></article>`}).join("")}
 function renderAnalytics(){const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const key=d.toLocaleDateString("en-CA");const mins=sessions.filter(s=>s.date===key).reduce((a,s)=>a+s.minutes,0);days.push({key,label:d.toLocaleDateString(undefined,{weekday:"short"}),mins})}const total=days.reduce((a,d)=>a+d.mins,0);$("weekHours").textContent=(total/60).toFixed(1)+"h";$("dailyAverage").textContent=(total/7/60).toFixed(1)+"h";$("sessionCount").textContent=days.reduce((a,d)=>a+sessions.filter(s=>s.date===d.key).length,0);$("weeklyChart").innerHTML=days.map(d=>`<div class="bar-item"><b>${(d.mins/60).toFixed(1)}h</b><div class="bar" style="height:${Math.max(3,d.mins/Math.max(360,...days.map(x=>x.mins))*100)}%"></div><small>${d.label}</small></div>`).join("");
                            const subjectTotals = {};
