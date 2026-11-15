@@ -26,13 +26,36 @@ const SUBJECTS = [
 const $ = id => document.getElementById(id);
 const today = () => new Date().toLocaleDateString("en-CA");
 let user = null, demo = false, auth = null, db = null, taskUnsub = null;
-let tasks = [], sessions = [], subjectProgress = {}, view = "dashboard", authMode = "login";
+let tasks = [], sessions = [], subjectProgress = {}, dailyGoal = 6, view = "dashboard", authMode = "login";
 let timerSeconds = 25*60, timerInterval = null, timerRunning = false, timerStartedAt = null;
 let selectedDate = today();
 
 const localKey = () => "upsc_commander_demo_v1";
-function readLocal(){ try{return JSON.parse(localStorage.getItem(localKey())) || {tasks:[],sessions:[],subjectProgress:{}}}catch{return {tasks:[],sessions:[],subjectProgress:{}}} }
-function writeLocal(){localStorage.setItem(localKey(),JSON.stringify({tasks,sessions,subjectProgress}));}
+function readLocal(){
+  try {
+    return JSON.parse(localStorage.getItem(localKey())) || {
+      tasks: [],
+      sessions: [],
+      subjectProgress: {},
+      dailyGoal: 6
+    };
+  } catch {
+    return {
+      tasks: [],
+      sessions: [],
+      subjectProgress: {},
+      dailyGoal: 6
+    };
+  }
+}
+function writeLocal(){
+  localStorage.setItem(localKey(), JSON.stringify({
+    tasks,
+    sessions,
+    subjectProgress,
+    dailyGoal
+  }));
+}
 function firebaseReady(){return FIREBASE_CONFIG.apiKey.startsWith("AIza") && !FIREBASE_CONFIG.projectId.startsWith("PASTE");}
 function toast(msg){const el=$("toast");el.textContent=msg;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),2200)}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -42,7 +65,20 @@ function todaySessions(){return sessions.filter(s=>s.date===today())}
 function minutesToday(){return todaySessions().reduce((a,s)=>a+s.minutes,0)}
 function fmtMinutes(m){return `${Math.floor(m/60)}h ${String(m%60).padStart(2,"0")}m`}
 function setMode(name){demo=name==="demo";$("modePill").textContent=demo?"● DEMO MODE":"● CLOUD SYNC";$("avatar").textContent=(user?.email||"A")[0].toUpperCase()}
-function showApp(){ $("authScreen").classList.add("hidden");$("app").classList.remove("hidden");populateSubjects();renderAll(); }
+function showApp(){
+  $("authScreen").classList.add("hidden");
+  $("app").classList.remove("hidden");
+
+  if (demo) {
+    const data = readLocal();
+    dailyGoal = Number(data.dailyGoal) || 6;
+  }
+
+  $("dailyGoalInput").value = dailyGoal;
+
+  populateSubjects();
+  renderAll();
+}
 function showAuth(){ $("app").classList.add("hidden");$("authScreen").classList.remove("hidden"); }
 function populateSubjects(){["taskSubject","timerSubject"].forEach(id=>$(id).innerHTML=SUBJECTS.map(s=>`<option>${esc(s)}</option>`).join(""))}
 async function loadCloud(){
@@ -71,6 +107,19 @@ function renderDashboard(){
   const total = Object.values(subjectProgress).reduce((a,b) => a+b, 0);
   $("statSyllabus").textContent =
     Math.round(total / SUBJECTS.length) + "%";
+    const goalMinutes = dailyGoal * 60;
+  const goalPercent = Math.min(100, (mins / goalMinutes) * 100);
+  const remainingMinutes = Math.max(0, goalMinutes - mins);
+
+  $("dailyGoalProgress").style.width = goalPercent + "%";
+
+  $("dailyGoalStatus").textContent =
+    `${goalPercent.toFixed(0)}% of your daily goal completed.`;
+
+  $("dailyGoalRemaining").textContent =
+    remainingMinutes === 0
+      ? "Daily study goal completed!"
+      : `${(remainingMinutes / 60).toFixed(1)} hours remaining today.`;
 
   const studyDates = [...new Set(
     sessions.map(s => s.date).filter(Boolean)
@@ -202,6 +251,23 @@ $("authForm").onsubmit = async e => {
 };
 
 $("logoutButton").onclick=async()=>{if(!demo&&auth)await signOut(auth);user=null;demo=false;showAuth()};
+$("saveDailyGoal").onclick = () => {
+  const value = Number($("dailyGoalInput").value);
+
+  if (!Number.isFinite(value) || value < 1 || value > 18) {
+    toast("Please enter a goal between 1 and 18 hours.");
+    return;
+  }
+
+  dailyGoal = value;
+  writeLocal();
+  renderDashboard();
+
+  $("dailyGoalStatus").textContent =
+    `Your daily target is ${dailyGoal} hours.`;
+
+  toast("Daily goal saved!");
+};
 $("taskForm").onsubmit=async e=>{e.preventDefault();await addTask({title:$("taskTitle").value.trim(),subject:$("taskSubject").value,minutes:Number($("taskMinutes").value),date:selectedDate});$("taskTitle").value="";toast("Task added")};
 $("plannerDate").onchange=e=>{selectedDate=e.target.value||today();renderTasks()};
 document.addEventListener("change",e=>{if(e.target.matches("[data-task-check]"))updateTask(e.target.dataset.taskCheck,{done:e.target.checked})});
