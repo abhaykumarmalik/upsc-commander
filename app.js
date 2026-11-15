@@ -635,6 +635,7 @@ let subjectGoals = JSON.parse(
   localStorage.getItem("subjectGoals") || "{}"
 );
 
+
 function renderSubjectGoals() {
   const container = $("subjectGoalsList");
 
@@ -654,11 +655,49 @@ function renderSubjectGoals() {
           total + Number(session.minutes || session.durationMinutes || 0),
         0
       );
-
+    
     const studiedHours = studiedMinutes / 60;
-    const progress = Math.min((studiedHours / hours) * 100, 100);
+    const progress = Math.min(
+      (studiedHours / hours) * 100,
+      100
+    );
 
-    return `
+    const achievement = progress;
+    const remainingHours = Math.max(hours - studiedHours, 0);
+
+    
+return `
+  <div style="margin:15px 0;">
+    <div style="display:flex; justify-content:space-between; gap:10px;">
+      <strong>${subject}</strong>
+      <span class="muted">
+        ${studiedHours.toFixed(1)}h / ${hours}h
+      </span>
+    </div>
+
+    <div class="muted" style="margin-top:5px;">
+      ${remainingHours.toFixed(1)}h remaining
+    </div>
+
+    <div class="muted" style="margin-top:5px;">
+      ${achievement.toFixed(1)}% achieved
+    </div>
+
+    <div style="margin-top:5px;">
+      ${studiedHours >= hours
+        ? '<span style="color:#22c55e;">✓ Goal Completed</span>'
+        : '<span style="color:#f59e0b;">In Progress</span>'}
+    </div>
+
+    <div style="height:10px; background:#1e293b; border-radius:10px; overflow:hidden; margin-top:8px;">
+      <div style="height:100%; width:${progress}%; background:#38bdf8;"></div>
+    </div>
+  </div>
+`;
+
+  }).join("");
+}
+
       <div style="margin:15px 0;">
         <div style="display:flex; justify-content:space-between; gap:10px;">
           <strong>${subject}</strong>
