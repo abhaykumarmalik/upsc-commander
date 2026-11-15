@@ -125,7 +125,15 @@
       <section class="view hidden" id="view-analytics">
         <div class="section-intro"><div><p class="eyebrow">MEASURE CONSISTENCY</p><h3>Study Analytics</h3><p class="muted">A simple record of your recent study sessions.</p></div></div>
         <div class="stats-grid"><article class="stat-card"><small>LAST 7 DAYS</small><strong id="weekHours">0h</strong><span class="stat-note">Focused study</span></article><article class="stat-card"><small>DAILY AVERAGE</small><strong id="dailyAverage">0h</strong><span class="stat-note">Across last 7 days</span></article><article class="stat-card"><small>SESSIONS</small><strong id="sessionCount">0</strong><span class="stat-note">Completed sessions</span></article></div>
-        <article class="panel"><div class="panel-head"><h3>Last 7 days</h3><span class="muted">Study hours</span></div><div id="weeklyChart" class="bar-chart"></div></article>
+        <article class="panel"><div class="panel-head"><h3>Last 7 days</h3><span class="muted">Study hours</span></div><div id="weeklyChart" class="bar-chart"></div><article class="panel">
+  <div class="panel-head">
+    <h3>Subject-wise Study Time</h3>
+    <span class="muted">Total hours</span>
+  </div>
+  <div id="subjectAnalytics" class="task-list">
+    <p class="muted">Loading subject analytics...</p>
+  </div>
+</article></article>
         <article class="panel"><div class="panel-head"><h3>Recent sessions</h3></div><div id="recentSessions" class="task-list"></div></article>
       </section>
 
