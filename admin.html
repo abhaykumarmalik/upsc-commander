@@ -504,10 +504,16 @@ userInfo.innerHTML = `
     progressText.textContent = progress;
 
     const tasksHeading = document.createElement("h4");
-    tasksHeading.textContent = "Daily Tasks";
+tasksHeading.textContent = "Daily Tasks";
 
-    const tasksText = document.createElement("pre");
-      const task = taskDoc.data();
+const tasksText = document.createElement("pre");
+tasksText.textContent = tasks;
+
+// Subject-wise Study Report
+const subjectStats = {};
+
+tasksSnapshot.forEach((taskDoc) => {
+  const task = taskDoc.data();
   const subject = task.subject || "Other";
 
   if (!subjectStats[subject]) {
@@ -530,6 +536,11 @@ userInfo.innerHTML = `
   }
 });
 
+const subjectHeading = document.createElement("h4");
+subjectHeading.textContent = "Subject-wise Study Report";
+
+const subjectText = document.createElement("pre");
+
 subjectText.textContent = Object.entries(subjectStats).length
   ? Object.entries(subjectStats).map(([subject, stats]) => {
       return `${subject}
@@ -539,7 +550,6 @@ Pending: ${stats.totalTasks - stats.completedTasks}
 Planned Time: ${stats.plannedMinutes} minutes`;
     }).join("\n\n")
   : "No subject-wise tasks found.";
-    tasksText.textContent = tasks;
     // Focus Session Records
 const sessionsHeading = document.createElement("h4");
 sessionsHeading.textContent = "Focus Session Records";
