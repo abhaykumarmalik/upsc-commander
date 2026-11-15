@@ -57,7 +57,13 @@
     import { getAuth, onAuthStateChanged, signOut } from
       "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    import { getFirestore, doc, getDocFromServer } from
+    import {
+  getFirestore,
+  doc,
+  getDocFromServer,
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
   "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     const firebaseConfig = {
       apiKey: "AIzaSyBYf0Xh3RSLlxOEDoEEnyTPvw6ZYf9RreI",
