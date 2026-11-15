@@ -664,6 +664,9 @@ function renderSubjectGoals() {
           <strong>${subject}</strong>
           <span class="muted">
             ${studiedHours.toFixed(1)}h / ${hours}h
+${studiedHours >= hours
+  ? '<span style="color:#22c55e;"> ✓ Goal Completed</span>'
+  : '<span style="color:#f59e0b;"> In Progress</span>'}
           </span>
         </div>
         <div style="height:10px; background:#1e293b; border-radius:10px; overflow:hidden; margin-top:8px;">
