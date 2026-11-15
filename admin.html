@@ -5,8 +5,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>UPSC COMMANDER | Admin</title>
+
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       padding: 25px;
@@ -14,14 +16,21 @@
       color: #e5e7eb;
       font-family: Arial, sans-serif;
     }
-    .container { max-width: 900px; margin: auto; }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
     h1 { color: #60a5fa; }
+
     .panel {
       background: #172033;
       padding: 20px;
       border-radius: 12px;
       margin-top: 20px;
     }
+
     button {
       background: #2563eb;
       color: white;
@@ -30,11 +39,21 @@
       border-radius: 8px;
       cursor: pointer;
     }
+
     #status { color: #fbbf24; }
+    .user-item {
+      padding: 10px;
+      margin-top: 8px;
+      background: #26334a;
+      border-radius: 6px;
+      overflow-wrap: anywhere;
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
+
     <h1>UPSC COMMANDER</h1>
     <p>Administrator Dashboard</p>
 
@@ -45,116 +64,138 @@
     </div>
 
     <div class="panel">
-  <h2>User Management</h2>
-  <p>Total Registered Users: <strong id="totalUsers">0</strong></p>
-  <div id="usersList">
-    Loading users...
+      <h2>User Management</h2>
+      <p>Total Registered Users:
+        <strong id="totalUsers">0</strong>
+      </p>
+      <div id="usersList">Loading users...</div>
+    </div>
+
   </div>
-</div>
+
   <script type="module">
-    import { initializeApp, getApps } from
+
+    import { initializeApp } from
       "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-    import { getAuth, onAuthStateChanged, signOut } from
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from
       "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     import {
-  getFirestore,
-  doc,
-  getDocFromServer,
-  collection,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-  "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+      getFirestore,
+      doc,
+      getDocFromServer,
+      collection,
+      getDocs
+    } from
+      "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+    // Apne Firebase Project ki existing values yahan rakho.
     const firebaseConfig = {
-      apiKey: "AIzaSyBYf0Xh3RSLlxOEDoEEnyTPvw6ZYf9RreI",
-  authDomain: "upsc-commander.firebaseapp.com",
-  projectId: "upsc-commander",
-  storageBucket: "upsc-commander.firebasestorage.app",
-  messagingSenderId: "621957377517",
-  appId: "1:621957377517:web:57060b9a2d26a7a7d48be4"
+      apiKey: "PASTE_YOUR_EXISTING_API_KEY",
+      authDomain: "upsc-commander.firebaseapp.com",
+      projectId: "upsc-commander",
+      storageBucket: "upsc-commander.firebasestorage.app",
+      messagingSenderId: "621957377517",
+      appId: "1:621957377517:web:57060b9a2d26a7a7d48be4"
     };
+
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    auth.authStateReady().then(() => {
-  console.log("Auth ready:", auth.currentUser?.email || "No user");
-});
     const db = getFirestore(app);
 
     const status = document.getElementById("status");
-
-    
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    status.textContent = "Please login first.";
-    return;
-  }
-
-  try {
-    const adminDoc = await getDocFromServer(
-      doc(db, "admin", user.uid)
-    );
-
-    if (!adminDoc.exists() || adminDoc.data().role !== "admin") {
-      status.textContent = "Access denied: Not an admin.";
-      return;
-    }
-
-    status.textContent = "Admin verified successfully.";
-
-    const usersSnapshot = await getDocs(
-      collection(db, "users")
-    );
-
-    document.getElementById("totalUsers").textContent =
-      usersSnapshot.size;
-
     const usersList = document.getElementById("usersList");
-    usersList.innerHTML = "";
+    const totalUsers = document.getElementById("totalUsers");
 
-    usersSnapshot.forEach((userDoc) => {
-      const item = document.createElement("p");
-      item.textContent = "User ID: " + userDoc.id;
-      usersList.appendChild(item);
+
+    onAuthStateChanged(auth, async (user) => {
+
+      if (!user) {
+        status.textContent = "Please login first.";
+        usersList.textContent = "Login required.";
+        return;
+      }
+
+      try {
+
+        // Verify Admin
+        const adminDoc = await getDocFromServer(
+          doc(db, "admin", user.uid)
+        );
+
+        if (
+          !adminDoc.exists() ||
+          adminDoc.data().role !== "admin"
+        ) {
+          status.textContent = "Access denied: Not an admin.";
+          usersList.textContent = "Admin access required.";
+          return;
+        }
+
+        status.textContent = "Admin verified successfully.";
+
+        // Load Registered Users
+        usersList.textContent = "Loading users...";
+
+        const usersSnapshot = await getDocs(
+          collection(db, "users")
+        );
+
+        totalUsers.textContent = usersSnapshot.size;
+        usersList.innerHTML = "";
+
+        if (usersSnapshot.empty) {
+          usersList.textContent = "No registered users found.";
+        } else {
+
+          usersSnapshot.forEach((userDoc) => {
+
+            const item = document.createElement("div");
+            item.className = "user-item";
+            item.textContent = "User ID: " + userDoc.id;
+
+            usersList.appendChild(item);
+
+          });
+
+        }
+
+        console.log("Admin verified:", user.uid);
+        console.log("Total users:", usersSnapshot.size);
+
+      } catch (error) {
+
+        status.textContent = "Firebase Error: " + error.message;
+        usersList.textContent = "Unable to load users.";
+
+        console.error("Admin Dashboard Error:", error);
+
+      }
+
     });
 
-  } catch (error) {
-    status.textContent = "Firebase Error: " + error.message;
-    console.error(error);
-  }
-});
 
+    // Logout
+    document.getElementById("logout").onclick = async () => {
 
-     try {
-  const adminDoc = await getDocFromServer(
-  doc(db, "admin", user.uid)
-);
-console.log("Logged UID:", user.uid);
-console.log("Admin document path:", "admins/" + user.uid);
-console.log("Document exists:", adminDoc.exists());
-    const role = adminDoc.exists()
-      ? adminDoc.data().role
-      : "Document not found";
-
-    status.textContent =
-      "Login UID: " + user.uid +
-      " | Document exists: " + adminDoc.exists() +
-      " | Role: " + role;
-
-  } catch (error) {
-    status.textContent = "Firebase Error: " + error.message;
-    console.error(error);
-  }
-});
-        document.getElementById("logout").onclick = async () => {
       try {
         await signOut(auth);
         status.textContent = "Logged out successfully.";
+        usersList.textContent = "Logged out.";
+
       } catch (error) {
         status.textContent = "Logout Error: " + error.message;
       }
+
     };
+
   </script>
 </body>
 </html>
