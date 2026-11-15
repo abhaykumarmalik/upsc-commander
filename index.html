@@ -59,6 +59,36 @@
         <div class="welcome-panel">
           <div><p class="eyebrow">STAY FOCUSED</p><h1>Small steps.<br><span>Serious progress.</span></h1><p class="muted">Your daily target is 6 focused study hours.</p></div>
           <div class="target-ring" id="targetRing"><div><strong id="todayHours">0.0h</strong><small>OF 6 HOURS</small></div></div>
+          <article class="panel">
+  <div class="panel-head">
+    <h3>Daily Study Goal</h3>
+    <span class="muted">Set your daily target</span>
+  </div>
+
+  <label for="dailyGoalInput">Study target (hours)</label>
+
+  <div class="timer-controls">
+    <input
+      type="number"
+      id="dailyGoalInput"
+      min="1"
+      max="18"
+      value="6"
+      class="timer-select"
+    />
+    <button class="primary" id="saveDailyGoal">Save Goal</button>
+  </div>
+
+  <p class="muted" id="dailyGoalStatus">
+    Your daily target is 6 hours.
+  </p>
+
+  <div class="progress-track">
+    <div class="progress-fill" id="dailyGoalProgress" style="width:0%"></div>
+  </div>
+
+  <p id="dailyGoalRemaining">6 hours remaining today.</p>
+</article>
         </div>
         <div class="stats-grid">
           <article class="stat-card"><span class="stat-icon">◷</span><small>STUDY TIME TODAY</small><strong id="statStudy">0h 00m</strong><span class="stat-note">Focused sessions</span></article>
