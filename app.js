@@ -108,21 +108,7 @@ $("authForm").onsubmit = async e => {
     );
 
     const account = credential.user;
-    const userSnap = await getDoc(
-      doc(db, "users", account.uid)
-    );
-
-    if (
-      userSnap.exists() &&
-      userSnap.data().accountStatus === "Suspended"
-    ) {
-      await signOut(auth);
-
-      $("authMessage").textContent =
-        "Your account is suspended. Please contact the administrator.";
-
-      return;
-    }
+    
   }
 
 } catch (err) {
