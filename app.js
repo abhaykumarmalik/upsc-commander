@@ -1047,19 +1047,24 @@ const maxMonthlyMinutes = Math.max(
   ...monthlyDailyData.map(item => item.minutes)
 );
 
-$("monthlyStudyChart").innerHTML = monthlyDailyData.map(item => `
-  <div
-    class="bar-item"
-    title="Day ${item.day}: ${(item.minutes / 60).toFixed(1)} hours studied"
-  >
-    <b>${(item.minutes / 60).toFixed(1)}h</b>
+if (monthlyMinutes === 0) {
+  $("monthlyStudyChart").innerHTML =
+    '<p class="muted">No study sessions recorded this month. Start studying to see your chart.</p>';
+} else {
+  $("monthlyStudyChart").innerHTML = monthlyDailyData.map(item => `
     <div
-      class="bar"
-      style="height:${Math.max(3, item.minutes / maxMonthlyMinutes * 100)}%"
-    ></div>
-    <small>${item.day}</small>
-  </div>
-`).join("");
+      class="bar-item"
+      title="Day ${item.day}: ${(item.minutes / 60).toFixed(1)} hours studied"
+    >
+      <b>${(item.minutes / 60).toFixed(1)}h</b>
+      <div
+        class="bar"
+        style="height:${Math.max(3, item.minutes / maxMonthlyMinutes * 100)}%"
+      ></div>
+      <small>${item.day}</small>
+    </div>
+  `).join("");
+}
                            // Monthly Subject Performance
 
 const monthlySubjectTotals = {};
