@@ -729,6 +729,22 @@ function renderSubjectGoalHistory() {
     ${completed ? '✓ Goal Completed' : 'In Progress'}
   </span>
 
+function deleteSubjectGoal(subject) {
+  if (!confirm(`Delete ${subject} study goal?`)) {
+    return;
+  }
+
+  delete subjectGoals[subject];
+
+  localStorage.setItem(
+    "subjectGoals",
+    JSON.stringify(subjectGoals)
+  );
+
+  renderSubjectGoals();
+  renderSubjectGoalHistory();
+}
+
   <button
     onclick="deleteSubjectGoal('${subject}')"
     style="background:#dc2626; color:white; border:0; padding:6px 12px; border-radius:6px; cursor:pointer;"
