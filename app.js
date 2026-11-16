@@ -884,6 +884,23 @@ const averageDailyStudy = total / 7 / 60;
 
 $("performanceDailyAverage").textContent =
   averageDailyStudy.toFixed(1) + "h";
+                           // Weekly Performance Insight
+
+let weeklyInsight = "";
+
+if (total === 0) {
+  weeklyInsight = "Start studying today to build your weekly progress.";
+} else if (achievement >= 100 && studyDays >= 5) {
+  weeklyInsight = "Excellent! You achieved your weekly study target.";
+} else if (studyDays >= 5) {
+  weeklyInsight = "Great consistency! Keep maintaining your daily routine.";
+} else if (achievement >= 70) {
+  weeklyInsight = "Good progress! Try to study more regularly.";
+} else {
+  weeklyInsight = "Focus on completing your weekly study target regularly.";
+}
+
+$("weeklyPerformanceInsight").textContent = weeklyInsight;
 
 $("weekHours").textContent =
   (total / 60).toFixed(1) + "h";$("dailyAverage").textContent=(total/7/60).toFixed(1)+"h";$("sessionCount").textContent=days.reduce((a,d)=>a+sessions.filter(s=>s.date===d.key).length,0);$("weeklyChart").innerHTML=days.map(d=>`<div class="bar-item"><b>${(d.mins/60).toFixed(1)}h</b><div class="bar" style="height:${Math.max(3,d.mins/Math.max(360,...days.map(x=>x.mins))*100)}%"></div><small>${d.label}</small></div>`).join("");
