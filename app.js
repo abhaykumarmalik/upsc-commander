@@ -767,49 +767,7 @@ document.addEventListener("click", function(event) {
   deleteSubjectGoal(button.dataset.subject);
 });
 
-  if (!confirm(`Delete ${subject} study goal?`)) {
-    return;
-  }
-
-  delete subjectGoals[subject];
-
-  localStorage.setItem(
-    "subjectGoals",
-    JSON.stringify(subjectGoals)
-  );
-
-  renderSubjectGoals();
-  renderSubjectGoalHistory();
-}
-
-document.addEventListener("click", function(event) {
-  const button = event.target.closest(".delete-subject-goal");
-
-  if (!button) return;
-
-  deleteSubjectGoal(button.dataset.subject);
-});
-
-
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
-          <span style="color:${completed ? '#22c55e' : '#f59e0b'};">
-            ${completed ? '✓ Goal Completed' : 'In Progress'}
-          </span>
-
-          <button
-            type="button"
-            data-subject="${subject}"
-            class="delete-subject-goal"
-            style="background:#dc2626; color:white; border:0; padding:6px 12px; border-radius:6px; cursor:pointer;"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
-    `;
-  }).join("");
-}
-
+  
 $("saveSubjectGoal").onclick = () => {
   const subject = $("goalSubject").value;
   const hours = Number($("subjectGoalHours").value);
