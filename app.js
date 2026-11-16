@@ -1048,7 +1048,10 @@ const maxMonthlyMinutes = Math.max(
 );
 
 $("monthlyStudyChart").innerHTML = monthlyDailyData.map(item => `
-  <div class="bar-item">
+  <div
+    class="bar-item"
+    title="Day ${item.day}: ${(item.minutes / 60).toFixed(1)} hours studied"
+  >
     <b>${(item.minutes / 60).toFixed(1)}h</b>
     <div
       class="bar"
