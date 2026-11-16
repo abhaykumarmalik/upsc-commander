@@ -1023,7 +1023,40 @@ const monthlyDailyAverage =
   monthlyMinutes / daysInMonth / 60;
 
 $("monthlyDailyAverage").textContent =
-  monthlyDailyAverage.toFixed(1) + "h";$("recentSessions").innerHTML=sessions.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(s=>`<div class="task-row"><div class="task-info"><div class="task-name">${esc(s.subject)}</div><div class="task-meta">${esc(s.date)} · ${s.minutes} minutes</div></div></div>`).join("")||`<div class="empty">No completed sessions yet.</div>`}
+  monthlyDailyAverage.toFixed(1) + "h";
+                           // Monthly Study Chart
+
+const monthlyDailyData = [];
+
+for (let day = 1; day <= daysInMonth; day++) {
+  const dateKey =
+    `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+  const minutes = currentMonthSessions
+    .filter(session => session.date === dateKey)
+    .reduce((sum, session) => sum + Number(session.minutes || 0), 0);
+
+  monthlyDailyData.push({
+    day,
+    minutes
+  });
+}
+
+const maxMonthlyMinutes = Math.max(
+  60,
+  ...monthlyDailyData.map(item => item.minutes)
+);
+
+$("monthlyStudyChart").innerHTML = monthlyDailyData.map(item => `
+  <div class="bar-item">
+    <b>${(item.minutes / 60).toFixed(1)}h</b>
+    <div
+      class="bar"
+      style="height:${Math.max(3, item.minutes / maxMonthlyMinutes * 100)}%"
+    ></div>
+    <small>${item.day}</small>
+  </div>
+`).join("");$("recentSessions").innerHTML=sessions.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(s=>`<div class="task-row"><div class="task-info"><div class="task-name">${esc(s.subject)}</div><div class="task-meta">${esc(s.date)} · ${s.minutes} minutes</div></div></div>`).join("")||`<div class="empty">No completed sessions yet.</div>`}
 function renderAll(){renderDashboard();renderSubjects();renderAnalytics();$("plannerDate").value=selectedDate;$("todayLabel").textContent=dateLabel(today()).toUpperCase()}
 function navigate(v){view=v;document.querySelectorAll(".view").forEach(el=>el.classList.add("hidden"));$("view-"+v).classList.remove("hidden");document.querySelectorAll(".nav-item[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===v));$("pageTitle").textContent=({dashboard:"Dashboard",planner:"Daily Planner",subjects:"Subject Tracker",timer:"Study Timer",analytics:"Analytics"})[v]}
 function setAuthMode(m){authMode=m;$("loginTab").classList.toggle("active",m==="login");$("registerTab").classList.toggle("active",m==="register");$("authSubmit").textContent=m==="login"?"Sign in":"Create account";$("password").autocomplete=m==="login"?"current-password":"new-password";$("authMessage").textContent=""}
