@@ -2,7 +2,7 @@
 // Firebase config is intentionally blank. Demo mode works without Firebase.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, collection, getDocs, setDoc, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, getDocs, setDoc, addDoc, deleteDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyBYf0Xh3RSLlxOEDoEEnyTPvw6ZYf9RreI",
@@ -1465,11 +1465,6 @@ $("exportButton").onclick=()=>{const blob=new Blob([JSON.stringify({
   dailyGoal,
   exportedAt: new Date().toISOString()
 }, null, 2)},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="upsc-commander-backup.json";a.click();URL.revokeObjectURL(a.href);toast("Backup downloaded")};
-// Import Study Data
-
-$("importButton").onclick = () => {
-  $("importFile").click();
-};
 
 $("importFile").onchange = async (event) => {
   const file = event.target.files[0];
