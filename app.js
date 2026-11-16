@@ -1528,6 +1528,151 @@ $("downloadStudyCSV").onclick = () => {
     return '"' + text.replace(/"/g, '""') + '"';
   };
 
+// Firebase Cloud Data Restore
+
+$("importButton").onclick = () => {
+  $("importFile").click();
+};
+
+$("importFile").onchange = async (event) => {
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  try {
+    if (demo || !user) {
+      throw new Error("Please sign in using Firebase Cloud Mode.");
+    }
+
+    const data = JSON.parse(await file.text());
+
+    if (
+      !data ||
+      !Array.isArray(data.tasks) ||
+      !Array.isArray(data.sessions) ||
+      !data.subjectProgress ||
+      typeof data.subjectProgress !== "object" ||
+      Array.isArray(data.subjectProgress)
+    ) {
+      throw new Error("Invalid backup file.");
+    }
+
+    const importedTasks = data.tasks;
+    const importedSessions = data.sessions;
+    const importedProgress = data.subjectProgress;
+
+    if (
+      !importedTasks.every(item => item && typeof item === "object" && !Array.isArray(item)) ||
+      !importedSessions.every(item => item && typeof item === "object" && !Array.isArray(item))
+    ) {
+      throw new Error("Backup contains invalid records.");
+    }
+
+    const confirmed = confirm(
+      "This will replace your existing Cloud Tasks, Sessions and Subject Progress. Continue?"
+    );
+
+    if (!confirmed) return;
+
+    $("studyReportStatus").textContent =
+      "Preparing Firebase restore...";
+
+    const tasksRef = collection(db, "users", user.uid, "tasks");
+    const sessionsRef = collection(db, "users", user.uid, "sessions");
+    const progressRef = doc(db, "users", user.uid, "settings", "progress");
+
+    const [oldTasks, oldSessions] = await Promise.all([
+      getDocs(tasksRef),
+      getDocs(sessionsRef)
+    ]);
+
+    const operationCount =
+      oldTasks.size +
+      oldSessions.size +
+      importedTasks.length +
+      importedSessions.length +
+      1;
+
+    if (operationCount > 500) {
+      throw new Error(
+        "Too many records for one safe restore operation. No data was changed."
+      );
+    }
+
+    const batch = writeBatch(db);
+
+    oldTasks.docs.forEach(item => batch.delete(item.ref));
+    oldSessions.docs.forEach(item => batch.delete(item.ref));
+
+    const restoredTasks = [];
+    const restoredSessions = [];
+
+    importedTasks.forEach(item => {
+      const { id, ...taskData } = item;
+      const newRef = doc(tasksRef);
+
+      batch.set(newRef, taskData);
+      restoredTasks.push({ id: newRef.id, ...taskData });
+    });
+
+    importedSessions.forEach(item => {
+      const { id, ...sessionData } = item;
+      const newRef = doc(sessionsRef);
+
+      batch.set(newRef, sessionData);
+      restoredSessions.push({ id: newRef.id, ...sessionData });
+    });
+
+    batch.set(
+      progressRef,
+      { values: importedProgress },
+      { merge: true }
+    );
+
+    await batch.commit();
+
+    tasks = restoredTasks;
+    sessions = restoredSessions;
+    subjectProgress = importedProgress;
+
+    if (
+      Number.isFinite(Number(data.dailyGoal)) &&
+      Number(data.dailyGoal) >= 1 &&
+      Number(data.dailyGoal) <= 18
+    ) {
+      const localData = readLocal();
+      localData.dailyGoal = Number(data.dailyGoal);
+
+      localStorage.setItem(
+        localKey(),
+        JSON.stringify(localData)
+      );
+
+      dailyGoal = Number(data.dailyGoal);
+    }
+
+    $("dailyGoalInput").value = dailyGoal;
+
+    renderAll();
+
+    $("studyReportStatus").textContent =
+      "Firebase study data restored successfully.";
+
+    toast("Cloud data restored successfully!");
+
+  } catch (error) {
+    console.error("Restore error:", error);
+
+    $("studyReportStatus").textContent =
+      "Restore failed. Your existing data was not intentionally changed.";
+
+    alert(error.message || "Unable to restore backup.");
+
+  } finally {
+    event.target.value = "";
+  }
+};
+
   const rows = [
     ["Date", "Subject", "Study Minutes", "Study Hours"]
   ];
