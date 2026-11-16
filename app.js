@@ -715,6 +715,8 @@ function renderSubjectGoalHistory() {
 
     const studiedHours = studiedMinutes / 60;
     const completed = studiedHours >= hours;
+   const progress = Math.min(100, (studiedHours / hours) * 100);
+   const remaining = Math.max(0, hours - studiedHours);
 
     return `
       <div style="padding:12px 0; border-bottom:1px solid #334155;">
@@ -722,6 +724,13 @@ function renderSubjectGoalHistory() {
 
         <p class="muted">
           Target: ${hours}h | Studied: ${studiedHours.toFixed(1)}h
+        </p>
+                <div style="background:#334155; height:8px; border-radius:10px; overflow:hidden; margin:10px 0;">
+          <div style="width:${progress}%; height:100%; background:#22c55e; border-radius:10px;"></div>
+        </div>
+
+        <p class="muted">
+          ${progress.toFixed(0)}% Completed | ${remaining.toFixed(1)}h Remaining
         </p>
 
                   <div style="display:flex; gap:8px;">
