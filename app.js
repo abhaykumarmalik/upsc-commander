@@ -730,6 +730,17 @@ function renderSubjectGoalHistory() {
   </span>
 
 function deleteSubjectGoal(subject) {
+
+document.addEventListener("click", function(event) {
+  const button = event.target.closest(".delete-subject-goal");
+
+  if (!button) return;
+
+  const subject = button.dataset.subject;
+
+  deleteSubjectGoal(subject);
+});
+
   if (!confirm(`Delete ${subject} study goal?`)) {
     return;
   }
@@ -745,12 +756,16 @@ function deleteSubjectGoal(subject) {
   renderSubjectGoalHistory();
 }
 
-  <button
-    onclick="deleteSubjectGoal('${subject}')"
-    style="background:#dc2626; color:white; border:0; padding:6px 12px; border-radius:6px; cursor:pointer;"
-  >
-    Delete
-  </button>
+  
+<button
+  type="button"
+  data-subject="${subject}"
+  class="delete-subject-goal"
+  style="background:#dc2626; color:white; border:0; padding:6px 12px; border-radius:6px; cursor:pointer;"
+>
+  Delete
+</button>
+
 </div>
 
       </div>
