@@ -1163,7 +1163,108 @@ if (monthlyGoalPercentage >= 100) {
 $("monthlyGoalInsight").textContent = monthlyGoalInsight;
 
 $("recentSessions").innerHTML=sessions.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(s=>`<div class="task-row"><div class="task-info"><div class="task-name">${esc(s.subject)}</div><div class="task-meta">${esc(s.date)} · ${s.minutes} minutes</div></div></div>`).join("")||`<div class="empty">No completed sessions yet.</div>`}
-function renderAll(){renderDashboard();renderSubjects();renderAnalytics();$("plannerDate").value=selectedDate;$("todayLabel").textContent=dateLabel(today()).toUpperCase()}
+
+function renderStudyStreak() {
+  // Collect unique study dates
+  const studyDates = [...new Set(
+    sessions
+      .filter(s => s.date)
+      .map(s => s.date)
+  )].sort();
+
+  const totalDays = studyDates.length;
+
+  if (totalDays === 0) {
+    $("currentStudyStreak").textContent = "0 Days";
+    $("longestStudyStreak").textContent = "0 Days";
+    $("totalStudyDays").textContent = "0 Days";
+    $("studyStreakInsight").textContent =
+      "Start studying to build your streak!";
+    return;
+  }
+
+  // Convert date strings into local calendar dates
+  const dateObjects = studyDates.map(date => {
+    const [year, month, day] = date.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  });
+
+  // Calculate longest streak
+  let longestStreak = 1;
+  let currentSequence = 1;
+
+  for (let i = 1; i < dateObjects.length; i++) {
+    const difference = Math.round(
+      (dateObjects[i] - dateObjects[i - 1]) / 86400000
+    );
+
+    if (difference === 1) {
+      currentSequence++;
+    } else {
+      currentSequence = 1;
+    }
+
+    longestStreak = Math.max(
+      longestStreak,
+      currentSequence
+    );
+  }
+
+  // Calculate current streak
+  const todayDate = new Date();
+  todayDate.setHours(0, 0, 0, 0);
+
+  const lastStudyDate = dateObjects[dateObjects.length - 1];
+
+  const daysSinceLastStudy = Math.round(
+    (todayDate - lastStudyDate) / 86400000
+  );
+
+  let currentStreak = 0;
+
+  if (daysSinceLastStudy <= 1) {
+    currentStreak = 1;
+
+    for (let i = dateObjects.length - 1; i > 0; i--) {
+      const difference = Math.round(
+        (dateObjects[i] - dateObjects[i - 1]) / 86400000
+      );
+
+      if (difference === 1) {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+  }
+
+  // Display streak statistics
+  $("currentStudyStreak").textContent =
+    currentStreak + (currentStreak === 1 ? " Day" : " Days");
+
+  $("longestStudyStreak").textContent =
+    longestStreak + (longestStreak === 1 ? " Day" : " Days");
+
+  $("totalStudyDays").textContent =
+    totalDays + (totalDays === 1 ? " Day" : " Days");
+
+  // Display insight
+  let insight = "";
+
+  if (currentStreak >= 7) {
+    insight = "Excellent consistency! Keep maintaining your study streak.";
+  } else if (currentStreak >= 3) {
+    insight = "Great progress! Keep studying daily to extend your streak.";
+  } else if (currentStreak > 0) {
+    insight = "Good start! Try to study consistently every day.";
+  } else {
+    insight = "Your streak has ended. Start a new streak with today's study session.";
+  }
+
+  $("studyStreakInsight").textContent = insight;
+}
+
+function renderAll(){renderStudyStreak();renderDashboard();renderSubjects();renderAnalytics();$("plannerDate").value=selectedDate;$("todayLabel").textContent=dateLabel(today()).toUpperCase()}
 function navigate(v){view=v;document.querySelectorAll(".view").forEach(el=>el.classList.add("hidden"));$("view-"+v).classList.remove("hidden");document.querySelectorAll(".nav-item[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===v));$("pageTitle").textContent=({dashboard:"Dashboard",planner:"Daily Planner",subjects:"Subject Tracker",timer:"Study Timer",analytics:"Analytics"})[v]}
 function setAuthMode(m){authMode=m;$("loginTab").classList.toggle("active",m==="login");$("registerTab").classList.toggle("active",m==="register");$("authSubmit").textContent=m==="login"?"Sign in":"Create account";$("password").autocomplete=m==="login"?"current-password":"new-password";$("authMessage").textContent=""}
 $("loginTab").onclick=()=>setAuthMode("login");$("registerTab").onclick=()=>setAuthMode("register");
