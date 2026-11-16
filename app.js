@@ -1093,6 +1093,17 @@ if (monthlySubjectEntries.length === 0) {
           <strong>${esc(subject)}</strong>
           <span>${(minutes / 60).toFixed(1)}h</span>
         </div>
+        <div class="progress-track" style="margin-top:8px;">
+          <div
+            class="progress-fill"
+            style="width:${minutes / maxSubjectMinutes * 100}%"
+          ></div>
+        </div>
+      </div>
+    `
+  ).join("");
+}
+
 // Monthly Study Goal
 
 const monthlyGoalTarget = Number(
@@ -1117,15 +1128,6 @@ $("monthlyGoalPercentage").textContent =
 
 $("monthlyGoalProgressBar").style.width =
   monthlyGoalPercentage + "%";
-        <div class="progress-track" style="margin-top:8px;">
-          <div
-            class="progress-fill"
-            style="width:${minutes / maxSubjectMinutes * 100}%"
-          ></div>
-        </div>
-      </div>
-    `
-  ).join("");
 }$("recentSessions").innerHTML=sessions.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(s=>`<div class="task-row"><div class="task-info"><div class="task-name">${esc(s.subject)}</div><div class="task-meta">${esc(s.date)} · ${s.minutes} minutes</div></div></div>`).join("")||`<div class="empty">No completed sessions yet.</div>`}
 function renderAll(){renderDashboard();renderSubjects();renderAnalytics();$("plannerDate").value=selectedDate;$("todayLabel").textContent=dateLabel(today()).toUpperCase()}
 function navigate(v){view=v;document.querySelectorAll(".view").forEach(el=>el.classList.add("hidden"));$("view-"+v).classList.remove("hidden");document.querySelectorAll(".nav-item[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===v));$("pageTitle").textContent=({dashboard:"Dashboard",planner:"Daily Planner",subjects:"Subject Tracker",timer:"Study Timer",analytics:"Analytics"})[v]}
