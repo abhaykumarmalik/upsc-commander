@@ -724,20 +724,26 @@ function renderSubjectGoalHistory() {
           Target: ${hours}h | Studied: ${studiedHours.toFixed(1)}h
         </p>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
-          <span style="color:${completed ? '#22c55e' : '#f59e0b'};">
-            ${completed ? '✓ Goal Completed' : 'In Progress'}
-          </span>
+                  <div style="display:flex; gap:8px;">
+            <button
+              type="button"
+              data-subject="${subject}"
+              data-hours="${hours}"
+              class="edit-subject-goal"
+              style="background:#2563eb; color:white; border:0; padding:6px 12px; border-radius:6px; cursor:pointer;"
+            >
+              Edit
+            </button>
 
-          <button
-            type="button"
-            data-subject="${subject}"
-            class="delete-subject-goal"
-            style="background:#dc2626; color:white; border:0; padding:6px 12px; border-radius:6px; cursor:pointer;"
-          >
-            Delete
-          </button>
-        </div>
+            <button
+              type="button"
+              data-subject="${subject}"
+              class="delete-subject-goal"
+              style="background:#dc2626; color:white; border:0; padding:6px 12px; border-radius:6px; cursor:pointer;"
+            >
+              Delete
+            </button>
+          </div>
       </div>
     `;
   }).join("");
@@ -760,11 +766,29 @@ function deleteSubjectGoal(subject) {
 }
 
 document.addEventListener("click", function(event) {
-  const button = event.target.closest(".delete-subject-goal");
 
-  if (!button) return;
+  // Edit Subject Goal
+  const editButton = event.target.closest(".edit-subject-goal");
 
-  deleteSubjectGoal(button.dataset.subject);
+  if (editButton) {
+    const subject = editButton.dataset.subject;
+    const hours = editButton.dataset.hours;
+
+    $("goalSubject").value = subject;
+    $("subjectGoalHours").value = hours;
+
+    $("subjectGoalHours").focus();
+
+    return;
+  }
+
+  // Delete Subject Goal
+  const deleteButton = event.target.closest(".delete-subject-goal");
+
+  if (deleteButton) {
+    deleteSubjectGoal(deleteButton.dataset.subject);
+  }
+
 });
 
   
