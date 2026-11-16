@@ -1520,13 +1520,45 @@ $("downloadStudyCSV").onclick = () => {
   const csvEscape = value => {
     let text = String(value ?? "");
 
-    // Prevent spreadsheet formula injection
     if (/^[=+\-@]/.test(text)) {
       text = "'" + text;
     }
 
     return '"' + text.replace(/"/g, '""') + '"';
   };
+
+  const rows = [
+    ["Subject", "Minutes", "Date"],
+    ...sessions.map(session => [
+      session.subject,
+      session.minutes,
+      session.date
+    ])
+  ];
+
+  const csv = rows
+    .map(row => row.map(csvEscape).join(","))
+    .join("\n");
+
+  const blob = new Blob(
+    ["\uFEFF" + csv],
+    { type: "text/csv;charset=utf-8;" }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "upsc-commander-study-report.csv";
+  link.click();
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+  $("studyReportStatus").textContent =
+    "CSV study report downloaded successfully.";
+
+  toast("CSV report downloaded!");
+};
 
 // Firebase Cloud Data Restore
 
