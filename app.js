@@ -1059,7 +1059,51 @@ $("monthlyStudyChart").innerHTML = monthlyDailyData.map(item => `
     ></div>
     <small>${item.day}</small>
   </div>
-`).join("");$("recentSessions").innerHTML=sessions.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(s=>`<div class="task-row"><div class="task-info"><div class="task-name">${esc(s.subject)}</div><div class="task-meta">${esc(s.date)} · ${s.minutes} minutes</div></div></div>`).join("")||`<div class="empty">No completed sessions yet.</div>`}
+`).join("");
+                           // Monthly Subject Performance
+
+const monthlySubjectTotals = {};
+
+currentMonthSessions.forEach(session => {
+  const subject = session.subject || "Other";
+
+  monthlySubjectTotals[subject] =
+    (monthlySubjectTotals[subject] || 0) +
+    Number(session.minutes || 0);
+});
+
+const monthlySubjectEntries = Object.entries(
+  monthlySubjectTotals
+).sort((a, b) => b[1] - a[1]);
+
+const monthlySubjectContainer = $("monthlySubjectPerformance");
+
+if (monthlySubjectEntries.length === 0) {
+  monthlySubjectContainer.innerHTML =
+    '<p class="muted">No subject study data available this month.</p>';
+} else {
+  const maxSubjectMinutes = Math.max(
+    ...monthlySubjectEntries.map(item => item[1])
+  );
+
+  monthlySubjectContainer.innerHTML = monthlySubjectEntries.map(
+    ([subject, minutes]) => `
+      <div class="subject-progress" style="margin-top:14px;">
+        <div style="display:flex;justify-content:space-between;gap:10px;">
+          <strong>${esc(subject)}</strong>
+          <span>${(minutes / 60).toFixed(1)}h</span>
+        </div>
+
+        <div class="progress-track" style="margin-top:8px;">
+          <div
+            class="progress-fill"
+            style="width:${minutes / maxSubjectMinutes * 100}%"
+          ></div>
+        </div>
+      </div>
+    `
+  ).join("");
+}$("recentSessions").innerHTML=sessions.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(s=>`<div class="task-row"><div class="task-info"><div class="task-name">${esc(s.subject)}</div><div class="task-meta">${esc(s.date)} · ${s.minutes} minutes</div></div></div>`).join("")||`<div class="empty">No completed sessions yet.</div>`}
 function renderAll(){renderDashboard();renderSubjects();renderAnalytics();$("plannerDate").value=selectedDate;$("todayLabel").textContent=dateLabel(today()).toUpperCase()}
 function navigate(v){view=v;document.querySelectorAll(".view").forEach(el=>el.classList.add("hidden"));$("view-"+v).classList.remove("hidden");document.querySelectorAll(".nav-item[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===v));$("pageTitle").textContent=({dashboard:"Dashboard",planner:"Daily Planner",subjects:"Subject Tracker",timer:"Study Timer",analytics:"Analytics"})[v]}
 function setAuthMode(m){authMode=m;$("loginTab").classList.toggle("active",m==="login");$("registerTab").classList.toggle("active",m==="register");$("authSubmit").textContent=m==="login"?"Sign in":"Create account";$("password").autocomplete=m==="login"?"current-password":"new-password";$("authMessage").textContent=""}
