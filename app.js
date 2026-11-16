@@ -723,9 +723,20 @@ function renderSubjectGoalHistory() {
         <p class="muted">
           Target: ${hours}h | Studied: ${studiedHours.toFixed(1)}h
         </p>
-        <span style="color:${completed ? '#22c55e' : '#f59e0b'};">
-          ${completed ? '✓ Goal Completed' : 'In Progress'}
-        </span>
+        
+<div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+  <span style="color:${completed ? '#22c55e' : '#f59e0b'};">
+    ${completed ? '✓ Goal Completed' : 'In Progress'}
+  </span>
+
+  <button
+    onclick="deleteSubjectGoal('${subject}')"
+    style="background:#dc2626; color:white; border:0; padding:6px 12px; border-radius:6px; cursor:pointer;"
+  >
+    Delete
+  </button>
+</div>
+
       </div>
     `;
   }).join("");
