@@ -1128,6 +1128,35 @@ $("monthlyGoalPercentage").textContent =
 
 $("monthlyGoalProgressBar").style.width =
   monthlyGoalPercentage + "%";
+
+// Monthly Goal Achievement Insight
+
+let monthlyGoalInsight = "";
+
+const remainingHours = Math.max(
+  0,
+  monthlyGoalTarget - monthlyHours
+);
+
+if (monthlyGoalPercentage >= 100) {
+  monthlyGoalInsight =
+    "Excellent! You have achieved your monthly study goal.";
+} else if (monthlyGoalPercentage >= 75) {
+  monthlyGoalInsight =
+    `Great progress! ${remainingHours.toFixed(1)} hours remaining.`;
+} else if (monthlyGoalPercentage >= 40) {
+  monthlyGoalInsight =
+    `Good effort! You have completed ${monthlyGoalPercentage}% of your monthly goal.`;
+} else if (monthlyHours > 0) {
+  monthlyGoalInsight =
+    `${monthlyGoalPercentage}% completed. ${remainingHours.toFixed(1)} hours remaining.`;
+} else {
+  monthlyGoalInsight =
+    "Start your monthly study goal with your first study session!";
+}
+
+$("monthlyGoalInsight").textContent = monthlyGoalInsight;
+
 }$("recentSessions").innerHTML=sessions.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(s=>`<div class="task-row"><div class="task-info"><div class="task-name">${esc(s.subject)}</div><div class="task-meta">${esc(s.date)} · ${s.minutes} minutes</div></div></div>`).join("")||`<div class="empty">No completed sessions yet.</div>`}
 function renderAll(){renderDashboard();renderSubjects();renderAnalytics();$("plannerDate").value=selectedDate;$("todayLabel").textContent=dateLabel(today()).toUpperCase()}
 function navigate(v){view=v;document.querySelectorAll(".view").forEach(el=>el.classList.add("hidden"));$("view-"+v).classList.remove("hidden");document.querySelectorAll(".nav-item[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===v));$("pageTitle").textContent=({dashboard:"Dashboard",planner:"Daily Planner",subjects:"Subject Tracker",timer:"Study Timer",analytics:"Analytics"})[v]}
