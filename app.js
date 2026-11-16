@@ -871,7 +871,10 @@ const achievement = weeklyTargetMinutes > 0
   : 0;
 
 $("performanceGoalAchievement").textContent =
-  achievement.toFixed(0) + "%";$("weekHours").textContent=(total/60).toFixed(1)+"h";$("dailyAverage").textContent=(total/7/60).toFixed(1)+"h";$("sessionCount").textContent=days.reduce((a,d)=>a+sessions.filter(s=>s.date===d.key).length,0);$("weeklyChart").innerHTML=days.map(d=>`<div class="bar-item"><b>${(d.mins/60).toFixed(1)}h</b><div class="bar" style="height:${Math.max(3,d.mins/Math.max(360,...days.map(x=>x.mins))*100)}%"></div><small>${d.label}</small></div>`).join("");
+  achievement.toFixed(0) + "%";
+
+$("weekHours").textContent =
+  (total / 60).toFixed(1) + "h";$("dailyAverage").textContent=(total/7/60).toFixed(1)+"h";$("sessionCount").textContent=days.reduce((a,d)=>a+sessions.filter(s=>s.date===d.key).length,0);$("weeklyChart").innerHTML=days.map(d=>`<div class="bar-item"><b>${(d.mins/60).toFixed(1)}h</b><div class="bar" style="height:${Math.max(3,d.mins/Math.max(360,...days.map(x=>x.mins))*100)}%"></div><small>${d.label}</small></div>`).join("");
                            const subjectTotals = {};
 
 sessions.forEach(s => {
