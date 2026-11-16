@@ -1,4 +1,4 @@
-// UPSC COMMANDER - v1.0
+ // UPSC COMMANDER - v1.0
 // Firebase config is intentionally blank. Demo mode works without Firebase.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -690,6 +690,42 @@ function renderSubjectGoals() {
         <div style="height:10px; background:#1e293b; border-radius:10px; overflow:hidden; margin-top:8px;">
           <div style="height:100%; width:${progress}%; background:#38bdf8;"></div>
         </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderSubjectGoalHistory() {
+  const historyContainer = $("subjectGoalHistory");
+  const entries = Object.entries(subjectGoals);
+
+  if (entries.length === 0) {
+    historyContainer.innerHTML =
+      '<p class="muted">No subject goals saved yet.</p>';
+    return;
+  }
+
+  historyContainer.innerHTML = entries.map(([subject, hours]) => {
+    const studiedMinutes = monthSessions
+      .filter(session => session.subject === subject)
+      .reduce(
+        (total, session) =>
+          total + Number(session.minutes || session.durationMinutes || 0),
+        0
+      );
+
+    const studiedHours = studiedMinutes / 60;
+    const completed = studiedHours >= hours;
+
+    return `
+      <div style="padding:12px 0; border-bottom:1px solid #334155;">
+        <strong>${subject}</strong>
+        <p class="muted">
+          Target: ${hours}h | Studied: ${studiedHours.toFixed(1)}h
+        </p>
+        <span style="color:${completed ? '#22c55e' : '#f59e0b'};">
+          ${completed ? '✓ Goal Completed' : 'In Progress'}
+        </span>
       </div>
     `;
   }).join("");
