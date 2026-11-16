@@ -863,10 +863,6 @@ $("performanceTopSubject").textContent =
 const dailyTarget = Number(
   (typeof dailyGoal !== "undefined" && dailyGoal) || 6
 );
-                           console.log("Daily Target:", dailyTarget);
-console.log("Weekly Study Minutes:", total);
-console.log("Weekly Target Minutes:", weeklyTargetMinutes);
-console.log("Weekly Achievement:", achievement);
 
 const weeklyTargetMinutes = dailyTarget * 7 * 60;
 
