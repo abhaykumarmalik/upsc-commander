@@ -1459,7 +1459,54 @@ document.querySelectorAll("[data-minutes]").forEach(b => {
   };
 });
 $("exportButton").onclick=()=>{const blob=new Blob([JSON.stringify({tasks,sessions,subjectProgress,exportedAt:new Date().toISOString()},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="upsc-commander-backup.json";a.click();URL.revokeObjectURL(a.href);toast("Backup downloaded")};
+// Import Study Data
 
+$("importButton").onclick = () => {
+  $("importFile").click();
+};
+
+$("importFile").onchange = async (event) => {
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+
+    if (
+      !data ||
+      !Array.isArray(data.tasks) ||
+      !Array.isArray(data.sessions) ||
+      !Array.isArray(data.subjectProgress)
+    ) {
+      throw new Error("Invalid backup file");
+    }
+
+    const confirmed = confirm(
+      "Importing this backup may replace your current study data. Continue?"
+    );
+
+    if (!confirmed) {
+      event.target.value = "";
+      return;
+    }
+
+    tasks = data.tasks;
+    sessions = data.sessions;
+    subjectProgress = data.subjectProgress;
+
+    writeLocal();
+    renderAll();
+
+    toast("Study data restored successfully!");
+
+  } catch (error) {
+    alert("Invalid or unsupported backup file.");
+  }
+
+  event.target.value = "";
+};
 // CSV Study Report Export
 
 $("downloadStudyCSV").onclick = () => {
