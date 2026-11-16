@@ -386,17 +386,12 @@
   <div id="weeklyChart" class="bar-chart"></div>
 </article>
 
-<article class="panel">
-  <div class="panel-head">
-    <h3>Subject-wise Study Time</h3>
-    <span class="muted">Total hours</span>
-  </div>
-  
+
 <article class="panel">
   <div class="panel-head">
     <h3>Subject Analytics</h3>
+    <span class="muted">Total hours</span>
   </div>
-
   <div id="subjectAnalytics" class="task-list">
     <p class="muted">Loading subject analytics...</p>
   </div>
@@ -407,7 +402,6 @@
     <h3>Weekly Subject Goal Report</h3>
     <span class="muted">Last 7 days</span>
   </div>
-
   <div id="weeklySubjectGoalReport">
     <p class="muted">Loading report...</p>
   </div>
@@ -415,24 +409,36 @@
 
 <article class="panel">
   <div class="panel-head">
-    <h3>Recent sessions</h3>
-  </div>
-  <div id="recentSessions" class="task-list"></div>
-</article>
-
-    <article class="panel">
-  <div class="panel-head">
-    <h3>Weekly Subject Goal Report</h3>
+    <h3>Weekly Performance Summary</h3>
     <span class="muted">Last 7 days</span>
   </div>
 
-  <div id="weeklySubjectGoalReport">
-    <p class="muted">Loading report...</p>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span>Total Weekly Study</span>
+      <strong id="performanceWeeklyHours">0h</strong>
+    </div>
+
+    <div class="stat-card">
+      <span>Most Studied Subject</span>
+      <strong id="performanceTopSubject">-</strong>
+    </div>
+
+    <div class="stat-card">
+      <span>Weekly Goal Achievement</span>
+      <strong id="performanceGoalAchievement">0%</strong>
+    </div>
   </div>
 </article>
-    <p class="muted">Loading subject analytics...</p>
+
+<article class="panel">
+  <div class="panel-head">
+    <h3>Recent Sessions</h3>
   </div>
+  <div id="recentSessions" class="task-list"></div>
 </article>
+</section>
+
         <article class="panel"><div class="panel-head"><h3>Recent sessions</h3></div><div id="recentSessions" class="task-list"></div></article>
       </section>
 
