@@ -1004,7 +1004,26 @@ if (monthlyMinutes === 0) {
   monthlyInsight = "Keep working towards your monthly study goals. Every session counts.";
 }
 
-$("monthlyPerformanceInsight").textContent = monthlyInsight;$("recentSessions").innerHTML=sessions.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(s=>`<div class="task-row"><div class="task-info"><div class="task-name">${esc(s.subject)}</div><div class="task-meta">${esc(s.date)} · ${s.minutes} minutes</div></div></div>`).join("")||`<div class="empty">No completed sessions yet.</div>`}
+$("monthlyPerformanceInsight").textContent = monthlyInsight;
+                           // Monthly Study Statistics
+
+const daysInMonth = new Date(
+  now.getFullYear(),
+  now.getMonth() + 1,
+  0
+).getDate();
+
+$("monthlyTotalHours").textContent =
+  monthlyHours.toFixed(1) + "h";
+
+$("monthlyStudyDays").textContent =
+  monthlyStudyDays + " Days";
+
+const monthlyDailyAverage =
+  monthlyMinutes / daysInMonth / 60;
+
+$("monthlyDailyAverage").textContent =
+  monthlyDailyAverage.toFixed(1) + "h";$("recentSessions").innerHTML=sessions.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(s=>`<div class="task-row"><div class="task-info"><div class="task-name">${esc(s.subject)}</div><div class="task-meta">${esc(s.date)} · ${s.minutes} minutes</div></div></div>`).join("")||`<div class="empty">No completed sessions yet.</div>`}
 function renderAll(){renderDashboard();renderSubjects();renderAnalytics();$("plannerDate").value=selectedDate;$("todayLabel").textContent=dateLabel(today()).toUpperCase()}
 function navigate(v){view=v;document.querySelectorAll(".view").forEach(el=>el.classList.add("hidden"));$("view-"+v).classList.remove("hidden");document.querySelectorAll(".nav-item[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===v));$("pageTitle").textContent=({dashboard:"Dashboard",planner:"Daily Planner",subjects:"Subject Tracker",timer:"Study Timer",analytics:"Analytics"})[v]}
 function setAuthMode(m){authMode=m;$("loginTab").classList.toggle("active",m==="login");$("registerTab").classList.toggle("active",m==="register");$("authSubmit").textContent=m==="login"?"Sign in":"Create account";$("password").autocomplete=m==="login"?"current-password":"new-password";$("authMessage").textContent=""}
