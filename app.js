@@ -1093,7 +1093,26 @@ if (monthlySubjectEntries.length === 0) {
           <strong>${esc(subject)}</strong>
           <span>${(minutes / 60).toFixed(1)}h</span>
         </div>
+// Monthly Study Goal
 
+const monthlyGoalTarget = 120;
+
+const monthlyGoalPercentage = Math.min(
+  100,
+  Math.round((monthlyMinutes / (monthlyGoalTarget * 60)) * 100)
+);
+
+$("monthlyGoalTarget").textContent =
+  monthlyGoalTarget + "h";
+
+$("monthlyGoalCompleted").textContent =
+  monthlyHours.toFixed(1) + "h";
+
+$("monthlyGoalPercentage").textContent =
+  monthlyGoalPercentage + "%";
+
+$("monthlyGoalProgressBar").style.width =
+  monthlyGoalPercentage + "%";
         <div class="progress-track" style="margin-top:8px;">
           <div
             class="progress-fill"
