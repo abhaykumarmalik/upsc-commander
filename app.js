@@ -850,7 +850,50 @@ $("subjectAnalytics").innerHTML = subjectEntries.map(([subject, minutes]) => `
       <div class="task-meta">${(minutes / 60).toFixed(1)} hours studied</div>
     </div>
   </div>
-`).join("") || `<div class="empty">No subject study data yet.</div>`;$("recentSessions").innerHTML=sessions.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(s=>`<div class="task-row"><div class="task-info"><div class="task-name">${esc(s.subject)}</div><div class="task-meta">${esc(s.date)} · ${s.minutes} minutes</div></div></div>`).join("")||`<div class="empty">No completed sessions yet.</div>`}
+`).join("") || `<div class="empty">No subject study data yet.</div>`;// Weekly Subject Goal Report
+const weeklySubjectTotals = {};
+
+days.forEach(day => {
+  sessions
+    .filter(s => s.date === day.key)
+    .forEach(s => {
+      const subject = s.subject || "Other";
+
+      weeklySubjectTotals[subject] =
+        (weeklySubjectTotals[subject] || 0) +
+        Number(s.minutes || 0);
+    });
+});
+
+const weeklyEntries = Object.entries(weeklySubjectTotals);
+
+$("weeklySubjectGoalReport").innerHTML =
+  weeklyEntries.map(([subject, minutes]) => {
+
+    const studiedHours = minutes / 60;
+    const targetHours = Number(subjectGoals[subject] || 0);
+
+    const progress = targetHours > 0
+      ? Math.min(100, studiedHours / targetHours * 100)
+      : 0;
+
+    return `
+      <div class="task-row">
+        <div class="task-info">
+          <div class="task-name">${esc(subject)}</div>
+          <div class="task-meta">
+            Studied: ${studiedHours.toFixed(1)}h
+            | Weekly Target: ${targetHours}h
+          </div>
+          <div style="background:#334155;height:8px;border-radius:10px;overflow:hidden;margin-top:8px;">
+            <div style="width:${progress}%;height:100%;background:#22c55e;"></div>
+          </div>
+          <small>${progress.toFixed(0)}% of weekly target</small>
+        </div>
+      </div>
+    `;
+  }).join("") ||
+  `<div class="empty">No study sessions this week.</div>`;$("recentSessions").innerHTML=sessions.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(s=>`<div class="task-row"><div class="task-info"><div class="task-name">${esc(s.subject)}</div><div class="task-meta">${esc(s.date)} · ${s.minutes} minutes</div></div></div>`).join("")||`<div class="empty">No completed sessions yet.</div>`}
 function renderAll(){renderDashboard();renderSubjects();renderAnalytics();$("plannerDate").value=selectedDate;$("todayLabel").textContent=dateLabel(today()).toUpperCase()}
 function navigate(v){view=v;document.querySelectorAll(".view").forEach(el=>el.classList.add("hidden"));$("view-"+v).classList.remove("hidden");document.querySelectorAll(".nav-item[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===v));$("pageTitle").textContent=({dashboard:"Dashboard",planner:"Daily Planner",subjects:"Subject Tracker",timer:"Study Timer",analytics:"Analytics"})[v]}
 function setAuthMode(m){authMode=m;$("loginTab").classList.toggle("active",m==="login");$("registerTab").classList.toggle("active",m==="register");$("authSubmit").textContent=m==="login"?"Sign in":"Create account";$("password").autocomplete=m==="login"?"current-password":"new-password";$("authMessage").textContent=""}
