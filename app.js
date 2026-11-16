@@ -1522,6 +1522,149 @@ $("downloadStudyCSV").onclick = () => {
   toast("CSV report downloaded!");
 };
 
+// PDF Study Report Export
+
+$("downloadStudyPDF").onclick = () => {
+  if (!sessions || sessions.length === 0) {
+    $("studyReportStatus").textContent =
+      "No study sessions available to export.";
+    return;
+  }
+
+  const printWindow = window.open("", "_blank");
+
+  if (!printWindow) {
+    $("studyReportStatus").textContent =
+      "Please allow pop-ups to generate your PDF report.";
+    return;
+  }
+
+  const totalMinutes = sessions.reduce(
+    (sum, session) => sum + Number(session.minutes || 0),
+    0
+  );
+
+  const totalHours = (totalMinutes / 60).toFixed(2);
+
+  const subjectTotals = {};
+
+  sessions.forEach(session => {
+    const subject = session.subject || "Other";
+
+    subjectTotals[subject] =
+      (subjectTotals[subject] || 0) +
+      Number(session.minutes || 0);
+  });
+
+  const subjectRows = Object.entries(subjectTotals)
+    .sort((a, b) => b[1] - a[1])
+    .map(([subject, minutes]) => `
+      <tr>
+        <td>${esc(subject)}</td>
+        <td>${(minutes / 60).toFixed(2)} hours</td>
+      </tr>
+    `).join("");
+
+  const sessionRows = sessions
+    .slice()
+    .sort((a, b) => (a.date || "").localeCompare(b.date || ""))
+    .map(session => `
+      <tr>
+        <td>${esc(session.date || "")}</td>
+        <td>${esc(session.subject || "Other")}</td>
+        <td>${Number(session.minutes || 0)} min</td>
+      </tr>
+    `).join("");
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>UPSC Commander Study Report</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          padding: 30px;
+          color: #1e293b;
+        }
+
+        h1, h2 {
+          color: #1d4ed8;
+        }
+
+        .summary {
+          display: flex;
+          gap: 20px;
+          margin: 20px 0;
+        }
+
+        .summary div {
+          border: 1px solid #cbd5e1;
+          padding: 15px;
+          flex: 1;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 15px;
+        }
+
+        th, td {
+          border: 1px solid #cbd5e1;
+          padding: 10px;
+          text-align: left;
+        }
+
+        th {
+          background: #e2e8f0;
+        }
+
+        @media print {
+          button { display: none; }
+        }
+      </style>
+    </head>
+
+    <body>
+      <h1>UPSC COMMANDER</h1>
+      <p>Study Performance Report</p>
+      <p>Generated: ${new Date().toLocaleString()}</p>
+
+      <div class="summary">
+        <div>
+          <h2>${sessions.length}</h2>
+          <p>Total Sessions</p>
+        </div>
+        <div>
+          <h2>${totalHours}h</h2>
+          <p>Total Study Hours</p>
+        </div>
+      </div>
+
+      <h2>Subject-wise Performance</h2>
+      <table>
+        <tr><th>Subject</th><th>Study Hours</th></tr>
+        ${subjectRows}
+      </table>
+
+      <h2>Study Session History</h2>
+      <table>
+        <tr><th>Date</th><th>Subject</th><th>Duration</th></tr>
+        ${sessionRows}
+      </table>
+
+      <button onclick="window.print()">Save as PDF</button>
+    </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+
+  $("studyReportStatus").textContent =
+    "PDF report opened. Select Save as PDF in the print window.";
+};
+
 if (firebaseReady()) {
   try {
     const app = initializeApp(FIREBASE_CONFIG);
