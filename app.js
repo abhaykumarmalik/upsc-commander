@@ -966,7 +966,45 @@ $("weeklySubjectGoalReport").innerHTML =
       </div>
     `;
   }).join("") ||
-  `<div class="empty">No study sessions this week.</div>`;$("recentSessions").innerHTML=sessions.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(s=>`<div class="task-row"><div class="task-info"><div class="task-name">${esc(s.subject)}</div><div class="task-meta">${esc(s.date)} · ${s.minutes} minutes</div></div></div>`).join("")||`<div class="empty">No completed sessions yet.</div>`}
+  `<div class="empty">No study sessions this week.</div>`;
+                           // Monthly Performance Insight
+const now = new Date();
+
+const currentMonthSessions = sessions.filter(session => {
+  const sessionDate = new Date(session.date + "T00:00:00");
+
+  return (
+    sessionDate.getMonth() === now.getMonth() &&
+    sessionDate.getFullYear() === now.getFullYear()
+  );
+});
+
+const monthlyMinutes = currentMonthSessions.reduce(
+  (sum, session) => sum + Number(session.minutes || 0),
+  0
+);
+
+const monthlyStudyDays = new Set(
+  currentMonthSessions.map(session => session.date)
+).size;
+
+const monthlyHours = monthlyMinutes / 60;
+
+let monthlyInsight = "";
+
+if (monthlyMinutes === 0) {
+  monthlyInsight = "Start studying today to build your monthly progress.";
+} else if (monthlyHours >= 100 && monthlyStudyDays >= 20) {
+  monthlyInsight = "Excellent monthly performance! Keep maintaining your consistency.";
+} else if (monthlyStudyDays >= 15) {
+  monthlyInsight = "Great effort! You are building a consistent study routine.";
+} else if (monthlyHours >= 30) {
+  monthlyInsight = "Good progress! Try to maintain a more regular study schedule.";
+} else {
+  monthlyInsight = "Keep working towards your monthly study goals. Every session counts.";
+}
+
+$("monthlyPerformanceInsight").textContent = monthlyInsight;$("recentSessions").innerHTML=sessions.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(s=>`<div class="task-row"><div class="task-info"><div class="task-name">${esc(s.subject)}</div><div class="task-meta">${esc(s.date)} · ${s.minutes} minutes</div></div></div>`).join("")||`<div class="empty">No completed sessions yet.</div>`}
 function renderAll(){renderDashboard();renderSubjects();renderAnalytics();$("plannerDate").value=selectedDate;$("todayLabel").textContent=dateLabel(today()).toUpperCase()}
 function navigate(v){view=v;document.querySelectorAll(".view").forEach(el=>el.classList.add("hidden"));$("view-"+v).classList.remove("hidden");document.querySelectorAll(".nav-item[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===v));$("pageTitle").textContent=({dashboard:"Dashboard",planner:"Daily Planner",subjects:"Subject Tracker",timer:"Study Timer",analytics:"Analytics"})[v]}
 function setAuthMode(m){authMode=m;$("loginTab").classList.toggle("active",m==="login");$("registerTab").classList.toggle("active",m==="register");$("authSubmit").textContent=m==="login"?"Sign in":"Create account";$("password").autocomplete=m==="login"?"current-password":"new-password";$("authMessage").textContent=""}
