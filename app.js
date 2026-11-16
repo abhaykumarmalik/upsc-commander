@@ -1188,6 +1188,25 @@ $("saveDailyGoal").onclick = () => {
     `Your daily target is ${dailyGoal} hours.`;
 
   toast("Daily goal saved!");
+ // Save Monthly Study Goal
+
+$("saveMonthlyGoal").onclick = () => {
+  const value = Number($("monthlyGoalInput").value);
+
+  if (!Number.isFinite(value) || value < 1 || value > 500) {
+    toast("Please enter a goal between 1 and 500 hours.");
+    return;
+  }
+
+  localStorage.setItem("monthlyGoalTarget", value);
+
+  renderAnalytics();
+
+  $("monthlyGoalStatus").textContent =
+    `Your monthly target is ${value} hours.`;
+
+  toast("Monthly goal saved!");
+};
 };
 $("taskForm").onsubmit=async e=>{e.preventDefault();await addTask({title:$("taskTitle").value.trim(),subject:$("taskSubject").value,minutes:Number($("taskMinutes").value),date:selectedDate});$("taskTitle").value="";toast("Task added")};
 $("plannerDate").onchange=e=>{selectedDate=e.target.value||today();renderTasks()};
