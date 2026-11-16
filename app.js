@@ -1095,7 +1095,11 @@ if (monthlySubjectEntries.length === 0) {
         </div>
 // Monthly Study Goal
 
-const monthlyGoalTarget = 120;
+const monthlyGoalTarget = Number(
+  localStorage.getItem("monthlyGoalTarget") || 120
+);
+
+$("monthlyGoalInput").value = monthlyGoalTarget;
 
 const monthlyGoalPercentage = Math.min(
   100,
