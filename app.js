@@ -1017,7 +1017,7 @@ $("monthlyTotalHours").textContent =
   monthlyHours.toFixed(1) + "h";
 
 $("monthlyStudyDays").textContent =
-  monthlyStudyDays + " Days";
+  monthlyStudyDays + (monthlyStudyDays === 1 ? " Day" : " Days");
 
 const monthlyDailyAverage =
   monthlyMinutes / daysInMonth / 60;
