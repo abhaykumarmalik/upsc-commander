@@ -1460,6 +1460,68 @@ document.querySelectorAll("[data-minutes]").forEach(b => {
 });
 $("exportButton").onclick=()=>{const blob=new Blob([JSON.stringify({tasks,sessions,subjectProgress,exportedAt:new Date().toISOString()},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="upsc-commander-backup.json";a.click();URL.revokeObjectURL(a.href);toast("Backup downloaded")};
 
+// CSV Study Report Export
+
+$("downloadStudyCSV").onclick = () => {
+  if (!sessions || sessions.length === 0) {
+    $("studyReportStatus").textContent =
+      "No study sessions available to export.";
+    return;
+  }
+
+  const csvEscape = value => {
+    let text = String(value ?? "");
+
+    // Prevent spreadsheet formula injection
+    if (/^[=+\-@]/.test(text)) {
+      text = "'" + text;
+    }
+
+    return '"' + text.replace(/"/g, '""') + '"';
+  };
+
+  const rows = [
+    ["Date", "Subject", "Study Minutes", "Study Hours"]
+  ];
+
+  sessions.forEach(session => {
+    const minutes = Number(session.minutes || 0);
+
+    rows.push([
+      session.date || "",
+      session.subject || "Other",
+      minutes,
+      (minutes / 60).toFixed(2)
+    ]);
+  });
+
+  const csvContent =
+    "\uFEFF" +
+    rows.map(row => row.map(csvEscape).join(",")).join("\n");
+
+  const blob = new Blob(
+    [csvContent],
+    { type: "text/csv;charset=utf-8;" }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "upsc-commander-study-report.csv";
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+  $("studyReportStatus").textContent =
+    "CSV study report downloaded successfully.";
+
+  toast("CSV report downloaded!");
+};
+
 if (firebaseReady()) {
   try {
     const app = initializeApp(FIREBASE_CONFIG);
