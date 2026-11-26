@@ -1426,7 +1426,7 @@ function updateTimerDisplay() {
 }
 
 $("subjectTimeLimit").addEventListener("change", () => {
-  if (timerRunning || timerStartedAt) {
+  if (timerSessionActive) {
     alert("पहले Timer को Pause या Reset करें।");
     return;
   }
