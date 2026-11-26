@@ -1322,13 +1322,14 @@ function checkStudyReminders() {
   String(now.getMinutes()).padStart(2, "0");
   const today = now.toISOString().slice(0, 10);
 
+    console.log("REMINDER CHECK:", {
+    permission: Notification.permission,
+    currentTime,
+    studyTime: localStorage.getItem("upsc_reminder_studyStartTime"),
+    studyEnabled: localStorage.getItem("upsc_reminder_studyStartEnabled")
+  });
+
   const reminders = [
-   console.log("REMINDER CHECK:", {
-  permission: Notification.permission,
-  currentTime,
-  studyTime: localStorage.getItem("upsc_reminder_studyStartTime"),
-  studyEnabled: localStorage.getItem("upsc_reminder_studyStartEnabled")
-});
     {
       id: "studyStart",
       time: "studyStartTime",
@@ -1351,7 +1352,6 @@ function checkStudyReminders() {
       body: "Review your pending UPSC tasks."
     }
   ];
-
   reminders.forEach(item => {
     const time = localStorage.getItem("upsc_reminder_" + item.time);
     const enabled = localStorage.getItem("upsc_reminder_" + item.enabled);
