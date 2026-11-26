@@ -1314,34 +1314,12 @@ loadReminderSettings();
 // Test Browser Notification
 
 $("testNotification").addEventListener("click", async () => {
-
-  if (!("serviceWorker" in navigator)) {
-    $("reminderStatus").textContent =
-      "Service Worker is not supported.";
-    return;
-  }
-
-  if (!("Notification" in window)) {
-    $("reminderStatus").textContent =
-      "Notifications are not supported.";
-    return;
-  }
-
-  const permission = await Notification.requestPermission();
-
-  if (permission !== "granted") {
-    $("reminderStatus").textContent =
-      "Notification permission denied.";
-    return;
-  }
-
   try {
-    const registration = await navigator.serviceWorker.ready;
+    if (!("serviceWorker" in navigator)) {
+      $("reminderStatus").textContent = "Service Worker not supported.";
+      return;
+    }
 
-    // Test Browser Notification
-
-$("testNotification").addEventListener("click", async () => {
-  try {
     if (!("Notification" in window)) {
       $("reminderStatus").textContent = "Notifications not supported.";
       return;
@@ -1368,17 +1346,6 @@ $("testNotification").addEventListener("click", async () => {
     $("reminderStatus").textContent = "Notification error: " + error.message;
   }
 });
-
-    $("reminderStatus").textContent =
-      "Test notification sent successfully.";
-
-  } else {
-    $("reminderStatus").textContent =
-      "Notification permission was not granted.";
-  }
-
-});
-function navigate(v){
   view=v;
 
   document.querySelectorAll(".view").forEach(el=>
