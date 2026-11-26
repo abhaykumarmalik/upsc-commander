@@ -26,6 +26,7 @@ const SUBJECTS = [
 const $ = id => document.getElementById(id);
 const today = () => new Date().toLocaleDateString("en-CA");
 let user = null, demo = false, auth = null, db = null, taskUnsub = null;
+let subjectGoals = {};
 let tasks = [], sessions = [], subjectProgress = {}, dailyGoal = 6, view = "dashboard", authMode = "login";
 let monthSessions = [];
 let timerSeconds = 25*60, timerInterval = null, timerRunning = false, timerStartedAt = null;
