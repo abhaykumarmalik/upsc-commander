@@ -1267,7 +1267,28 @@ function renderStudyStreak() {
 }
 
 function renderAll(){renderStudyStreak();renderDashboard();renderSubjects();renderAnalytics();$("plannerDate").value=selectedDate;$("todayLabel").textContent=dateLabel(today()).toUpperCase()}
-function navigate(v){view=v;document.querySelectorAll(".view").forEach(el=>el.classList.add("hidden"));$("view-"+v).classList.remove("hidden");document.querySelectorAll(".nav-item[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===v));$("pageTitle").textContent=({dashboard:"Dashboard",planner:"Daily Planner",subjects:"Subject Tracker",timer:"Study Timer",analytics:"Analytics"})[v]}
+function navigate(v){
+  view=v;
+
+  document.querySelectorAll(".view").forEach(el=>
+    el.classList.add("hidden")
+  );
+
+  $("view-"+v).classList.remove("hidden");
+
+  document.querySelectorAll(".nav-item[data-view]").forEach(b=>
+    b.classList.toggle("active",b.dataset.view===v)
+  );
+
+  $("pageTitle").textContent=({
+    dashboard:"Dashboard",
+    planner:"Daily Planner",
+    subjects:"Subject Tracker",
+    timer:"Study Timer",
+    analytics:"Analytics",
+    reminders:"Reminders"
+  })[v];
+}
 function setAuthMode(m){authMode=m;$("loginTab").classList.toggle("active",m==="login");$("registerTab").classList.toggle("active",m==="register");$("authSubmit").textContent=m==="login"?"Sign in":"Create account";$("password").autocomplete=m==="login"?"current-password":"new-password";$("authMessage").textContent=""}
 $("loginTab").onclick=()=>setAuthMode("login");$("registerTab").onclick=()=>setAuthMode("register");
 
