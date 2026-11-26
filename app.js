@@ -1941,10 +1941,6 @@ if (firebaseReady()) {
 
         const accountStatus = String(userSnap.data().accountStatus || "").trim();
 
-        console.log("ACCOUNT STATUS:", accountStatus);
-        console.log("CURRENT USER UID:", u.uid);
-console.log("PROFILE DATA:", userSnap.data());
-
         if (accountStatus !== "Active") {
           user = null;
 
