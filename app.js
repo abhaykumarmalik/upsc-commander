@@ -1359,29 +1359,32 @@ let timerSessionActive = false;
 $("timerStart").onclick = async () => {
   const limit = Number($("subjectTimeLimit").value);
 
-  if (!timerRunning && !timerStartedAt && timerSeconds <= 0) {
-    timerSeconds = limit * 60;
-  }
-
-  if (!timerRunning && !timerStartedAt) {
-    if (limit < 5 || limit > 600 || !Number.isFinite(limit)) {
-      alert("Enter time between 5 and 600 minutes.");
-      return;
-    }
-    timerSeconds = limit * 60;
-    timerElapsedBeforePause = 0;
-    updateTimerDisplay();
-  }
-
+  // Pause
   if (timerRunning) {
     clearInterval(timerInterval);
+
     timerElapsedBeforePause += Date.now() - timerStartedAt;
     timerStartedAt = null;
     timerRunning = false;
+
     $("timerStart").textContent = "Resume";
     return;
   }
 
+  // Fresh session only
+  if (!timerSessionActive) {
+    if (!Number.isFinite(limit) || limit < 5 || limit > 600) {
+      alert("Enter time between 5 and 600 minutes.");
+      return;
+    }
+
+    timerSeconds = limit * 60;
+    timerElapsedBeforePause = 0;
+    timerSessionActive = true;
+    updateTimerDisplay();
+  }
+
+  // Start or Resume
   timerRunning = true;
   timerStartedAt = Date.now();
   $("timerStart").textContent = "Pause";
@@ -1401,6 +1404,7 @@ $("timerStart").onclick = async () => {
 
       timerStartedAt = null;
       timerElapsedBeforePause = 0;
+      timerSessionActive = false;
 
       await recordSession($("timerSubject").value, mins);
 
