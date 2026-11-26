@@ -269,7 +269,7 @@ $("weeklyGoalsCompleted").textContent =
 const currentYear = year;
 const currentMonth = month;
 
-const monthSessions = sessions.filter(s => {
+monthSessions = sessions.filter(s => {
   const d = new Date(s.date + "T00:00:00");
   return (
     d.getFullYear() === currentYear &&
