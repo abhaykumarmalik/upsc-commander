@@ -1733,7 +1733,15 @@ $("importFile").onchange = async (event) => {
       (minutes / 60).toFixed(2)
     ]);
   });
+const csvEscape = value => {
+  let text = String(value ?? "");
 
+  if (/^[=+\-@]/.test(text)) {
+    text = "'" + text;
+  }
+
+  return '"' + text.replace(/"/g, '""') + '"';
+};
   const csvContent =
     "\uFEFF" +
     rows.map(row => row.map(csvEscape).join(",")).join("\n");
