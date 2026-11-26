@@ -1322,6 +1322,7 @@ $("testNotification").addEventListener("click", async () => {
   }
 
   const permission = await Notification.requestPermission();
+ console.log("Notification Permission:", permission);
 
   if (permission === "granted") {
     new Notification("UPSC COMMANDER", {
