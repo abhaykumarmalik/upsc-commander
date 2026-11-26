@@ -1315,20 +1315,45 @@ loadReminderSettings();
 
 $("testNotification").addEventListener("click", async () => {
 
+  if (!("serviceWorker" in navigator)) {
+    $("reminderStatus").textContent =
+      "Service Worker is not supported.";
+    return;
+  }
+
   if (!("Notification" in window)) {
     $("reminderStatus").textContent =
-      "This browser does not support notifications.";
+      "Notifications are not supported.";
     return;
   }
 
   const permission = await Notification.requestPermission();
- console.log("Notification Permission:", permission);
 
-  if (permission === "granted") {
-    new Notification("UPSC COMMANDER", {
+  if (permission !== "granted") {
+    $("reminderStatus").textContent =
+      "Notification permission denied.";
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+
+    await registration.showNotification("UPSC COMMANDER", {
       body: "Your study reminder is working. Time to focus!",
-      icon: "./icon-192.png"
+      icon: "./icon-192.png",
+      badge: "./icon-192.png"
     });
+
+    $("reminderStatus").textContent =
+      "Test notification sent successfully.";
+
+  } catch (error) {
+    console.error(error);
+    $("reminderStatus").textContent =
+      "Notification error: " + error.message;
+  }
+
+});
 
     $("reminderStatus").textContent =
       "Test notification sent successfully.";
