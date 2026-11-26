@@ -27,7 +27,10 @@ const $ = id => document.getElementById(id);
 const today = () => new Date().toLocaleDateString("en-CA");
 let user = null, demo = false, auth = null, db = null, taskUnsub = null;
 let tasks = [], sessions = [], subjectProgress = {}, dailyGoal = 6, view = "dashboard", authMode = "login";
+let monthSessions = [];
 let timerSeconds = 25*60, timerInterval = null, timerRunning = false, timerStartedAt = null;
+let timerElapsedBeforePause = 0;
+let timerSessionActive = false;
 let selectedDate = today();
 
 const localKey = () => "upsc_commander_demo_v1";
@@ -634,7 +637,7 @@ if (subjectPerformanceList.length > 0) {
 let subjectGoals = JSON.parse(
   localStorage.getItem("subjectGoals") || "{}"
 );
-let monthSessions = [];
+
 function renderSubjectGoals() {
   const container = $("subjectGoalsList");
 
