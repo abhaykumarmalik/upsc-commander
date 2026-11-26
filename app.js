@@ -1719,55 +1719,6 @@ $("importFile").onchange = async (event) => {
   }
 };
 
-  const rows = [
-    ["Date", "Subject", "Study Minutes", "Study Hours"]
-  ];
-
-  sessions.forEach(session => {
-    const minutes = Number(session.minutes || 0);
-
-    rows.push([
-      session.date || "",
-      session.subject || "Other",
-      minutes,
-      (minutes / 60).toFixed(2)
-    ]);
-  });
-const csvEscape = value => {
-  let text = String(value ?? "");
-
-  if (/^[=+\-@]/.test(text)) {
-    text = "'" + text;
-  }
-
-  return '"' + text.replace(/"/g, '""') + '"';
-};
-  const csvContent =
-    "\uFEFF" +
-    rows.map(row => row.map(csvEscape).join(",")).join("\n");
-
-  const blob = new Blob(
-    [csvContent],
-    { type: "text/csv;charset=utf-8;" }
-  );
-
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-
-  link.href = url;
-  link.download = "upsc-commander-study-report.csv";
-
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-
-  $("studyReportStatus").textContent =
-    "CSV study report downloaded successfully.";
-
-  toast("CSV report downloaded!");
-
 // PDF Study Report Export
 
 $("downloadStudyPDF").onclick = () => {
