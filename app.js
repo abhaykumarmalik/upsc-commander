@@ -1451,6 +1451,7 @@ $("timerReset").onclick = () => {
   timerRunning = false;
   timerStartedAt = null;
   timerElapsedBeforePause = 0;
+ timerSessionActive = false;
 
   const limit = Number($("subjectTimeLimit").value);
   timerSeconds = limit >= 5 && limit <= 600 ? limit * 60 : 25 * 60;
