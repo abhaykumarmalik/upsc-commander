@@ -634,7 +634,7 @@ if (subjectPerformanceList.length > 0) {
 let subjectGoals = JSON.parse(
   localStorage.getItem("subjectGoals") || "{}"
 );
-
+let monthSessions = [];
 function renderSubjectGoals() {
   const container = $("subjectGoalsList");
 
