@@ -94,7 +94,7 @@ function renderTasks(){const list=dayTasks();$("plannerTasks").innerHTML=list.le
 function renderDashboard(){
   const mins = minutesToday();
   const hours = mins / 60;
-  const pct = Math.min(100, mins / 360 * 100);
+  const pct = Math.min(100, (mins / (dailyGoal * 60)) * 100);
 
   $("todayHours").textContent = hours.toFixed(1) + "h";
   $("targetRing").style.background =
