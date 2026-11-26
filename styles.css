@@ -176,30 +176,32 @@ video {
   overflow-wrap: anywhere;
 }
 
-@media (min-width: 1201px) {
-  .main {
-    width: calc(100% - 248px);
-  }
-}
 /* Laptop Dashboard Layout Fix */
 @media (min-width: 1201px) {
   .main {
+    margin-left: 248px;
     width: calc(100% - 248px);
     max-width: none;
     min-height: 100vh;
+    overflow: visible;
   }
 
   .view {
+    display: block;
     width: 100%;
     min-width: 0;
     height: auto;
+    max-height: none;
     overflow: visible;
   }
 
   .panel,
   .stats-grid,
   .content-grid {
-    min-width: 0;
     width: 100%;
+    min-width: 0;
+    height: auto;
+    max-height: none;
+    overflow: visible;
   }
 }
