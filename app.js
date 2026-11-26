@@ -1759,7 +1759,6 @@ $("importFile").onchange = async (event) => {
     "CSV study report downloaded successfully.";
 
   toast("CSV report downloaded!");
-};
 
 // PDF Study Report Export
 
