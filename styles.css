@@ -205,3 +205,35 @@ video {
     overflow: visible;
   }
 }
+/* All App Pages - Laptop Layout Fix */
+@media (min-width: 1201px) {
+  .main {
+    overflow: visible;
+  }
+
+  .view {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .view.hidden {
+    display: none !important;
+  }
+
+  .view > * {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .subject-grid,
+  .timer-layout,
+  .content-grid,
+  .stats-grid {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
