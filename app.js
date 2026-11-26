@@ -1323,6 +1323,12 @@ function checkStudyReminders() {
   const today = now.toISOString().slice(0, 10);
 
   const reminders = [
+   console.log("REMINDER CHECK:", {
+  permission: Notification.permission,
+  currentTime,
+  studyTime: localStorage.getItem("upsc_reminder_studyStartTime"),
+  studyEnabled: localStorage.getItem("upsc_reminder_studyStartEnabled")
+});
     {
       id: "studyStart",
       time: "studyStartTime",
