@@ -942,9 +942,7 @@ $("weeklySubjectGoalReport").innerHTML =
   weeklyEntries.map(([subject, minutes]) => {
 
     const studiedHours = minutes / 60;
-    const targetHours = Number(
-  (typeof subjectGoals !== "undefined" && subjectGoals[subject]) || 0
-);
+    const targetHours = Number(subjectGoals[subject] || 0);
 
     const progress = targetHours > 0
       ? Math.min(100, studiedHours / targetHours * 100)
