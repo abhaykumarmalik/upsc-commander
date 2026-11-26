@@ -2050,6 +2050,15 @@ if (firebaseReady()) {
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./sw.js").catch(console.warn);
+   navigator.serviceWorker.ready.then(async registration => {
+  console.log("SW Active:", registration.active?.state);
+  console.log("Notification Permission:", Notification.permission);
+  console.log("SW Scope:", registration.scope);
+
+  $("reminderStatus").textContent =
+    "SW: " + (registration.active?.state || "Not Active") +
+    " | Permission: " + Notification.permission;
+});
   });
 }
 
