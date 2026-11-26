@@ -630,7 +630,7 @@ if (subjectPerformanceList.length > 0) {
   $("topSubjectHours").textContent = "0h";
 }
 
-// SUBJECT STUDY GOALS
+// GLOBAL SUBJECT STUDY GOALS
 let subjectGoals = JSON.parse(
   localStorage.getItem("subjectGoals") || "{}"
 );
