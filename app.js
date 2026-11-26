@@ -1465,8 +1465,10 @@ $("exportButton").onclick = () => {
         tasks,
         sessions,
         subjectProgress,
-        dailyGoal,
-        exportedAt: new Date().toISOString()
+subjectGoals,
+dailyGoal,
+monthlyGoal: Number(localStorage.getItem("monthlyGoalTarget") || 120),
+exportedAt: new Date().toISOString()
       }, null, 2)
     ],
     { type: "application/json" }
