@@ -1705,7 +1705,15 @@ if (data.subjectGoals && typeof data.subjectGoals === "object") {
 
       dailyGoal = Number(data.dailyGoal);
     }
-
+if (
+  Number.isFinite(Number(data.monthlyGoal)) &&
+  Number(data.monthlyGoal) >= 1
+) {
+  localStorage.setItem(
+    "monthlyGoalTarget",
+    Number(data.monthlyGoal)
+  );
+}
     $("dailyGoalInput").value = dailyGoal;
 
     renderAll();
