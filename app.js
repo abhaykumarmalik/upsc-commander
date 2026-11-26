@@ -1311,6 +1311,33 @@ $("saveReminderSettings").addEventListener("click", () => {
 });
 
 loadReminderSettings();
+// Test Browser Notification
+
+$("testNotification").addEventListener("click", async () => {
+
+  if (!("Notification" in window)) {
+    $("reminderStatus").textContent =
+      "This browser does not support notifications.";
+    return;
+  }
+
+  const permission = await Notification.requestPermission();
+
+  if (permission === "granted") {
+    new Notification("UPSC COMMANDER", {
+      body: "Your study reminder is working. Time to focus!",
+      icon: "./icon-192.png"
+    });
+
+    $("reminderStatus").textContent =
+      "Test notification sent successfully.";
+
+  } else {
+    $("reminderStatus").textContent =
+      "Notification permission was not granted.";
+  }
+
+});
 function navigate(v){
   view=v;
 
