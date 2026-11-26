@@ -1356,7 +1356,6 @@ $("plannerDate").onchange=e=>{selectedDate=e.target.value||today();renderTasks()
 document.addEventListener("change",e=>{if(e.target.matches("[data-task-check]"))updateTask(e.target.dataset.taskCheck,{done:e.target.checked})});
 document.addEventListener("click",e=>{const del=e.target.closest("[data-task-delete]");if(del)removeTask(del.dataset.taskDelete);const prog=e.target.closest("[data-progress]");if(prog){const s=prog.dataset.progress;subjectProgress[s]=Math.max(0,Math.min(100,(subjectProgress[s]||0)+Number(prog.dataset.delta)));saveProgress().then(renderAll);}});
 document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>navigate(b.dataset.view));document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>navigate(b.dataset.go));
-let timerSessionActive = false;
 
 $("timerStart").onclick = async () => {
   const limit = Number($("subjectTimeLimit").value);
