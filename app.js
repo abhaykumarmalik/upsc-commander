@@ -1338,21 +1338,35 @@ $("testNotification").addEventListener("click", async () => {
   try {
     const registration = await navigator.serviceWorker.ready;
 
+    // Test Browser Notification
+
+$("testNotification").addEventListener("click", async () => {
+  try {
+    if (!("Notification" in window)) {
+      $("reminderStatus").textContent = "Notifications not supported.";
+      return;
+    }
+
+    const permission = await Notification.requestPermission();
+
+    if (permission !== "granted") {
+      $("reminderStatus").textContent = "Permission not granted.";
+      return;
+    }
+
+    const registration = await navigator.serviceWorker.ready;
+
     await registration.showNotification("UPSC COMMANDER", {
-      body: "Your study reminder is working. Time to focus!",
-      icon: "./icon-192.png",
-      badge: "./icon-192.png"
+      body: "Your study reminder is working!",
+      icon: "./icon-192.png"
     });
 
-    $("reminderStatus").textContent =
-      "Test notification sent successfully.";
+    $("reminderStatus").textContent = "Test notification sent successfully.";
 
   } catch (error) {
     console.error(error);
-    $("reminderStatus").textContent =
-      "Notification error: " + error.message;
+    $("reminderStatus").textContent = "Notification error: " + error.message;
   }
-
 });
 
     $("reminderStatus").textContent =
