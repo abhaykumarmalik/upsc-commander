@@ -1355,8 +1355,14 @@ $("plannerDate").onchange=e=>{selectedDate=e.target.value||today();renderTasks()
 document.addEventListener("change",e=>{if(e.target.matches("[data-task-check]"))updateTask(e.target.dataset.taskCheck,{done:e.target.checked})});
 document.addEventListener("click",e=>{const del=e.target.closest("[data-task-delete]");if(del)removeTask(del.dataset.taskDelete);const prog=e.target.closest("[data-progress]");if(prog){const s=prog.dataset.progress;subjectProgress[s]=Math.max(0,Math.min(100,(subjectProgress[s]||0)+Number(prog.dataset.delta)));saveProgress().then(renderAll);}});
 document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>navigate(b.dataset.view));document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>navigate(b.dataset.go));
-$("timerStart").onclick = () => {
+let timerElapsedBeforePause = 0;
+
+$("timerStart").onclick = async () => {
   const limit = Number($("subjectTimeLimit").value);
+
+  if (!timerRunning && !timerStartedAt && timerSeconds <= 0) {
+    timerSeconds = limit * 60;
+  }
 
   if (!timerRunning && !timerStartedAt) {
     if (limit < 5 || limit > 600 || !Number.isFinite(limit)) {
@@ -1364,19 +1370,21 @@ $("timerStart").onclick = () => {
       return;
     }
     timerSeconds = limit * 60;
+    timerElapsedBeforePause = 0;
     updateTimerDisplay();
   }
 
   if (timerRunning) {
     clearInterval(timerInterval);
+    timerElapsedBeforePause += Date.now() - timerStartedAt;
+    timerStartedAt = null;
     timerRunning = false;
     $("timerStart").textContent = "Resume";
     return;
   }
 
   timerRunning = true;
-  if (!timerStartedAt) timerStartedAt = Date.now();
-
+  timerStartedAt = Date.now();
   $("timerStart").textContent = "Pause";
 
   timerInterval = setInterval(async () => {
@@ -1387,13 +1395,16 @@ $("timerStart").onclick = () => {
       clearInterval(timerInterval);
       timerRunning = false;
 
-      const mins = Math.max(1, Math.round(
-        (Date.now() - timerStartedAt) / 60000
-      ));
+      const totalElapsed =
+        timerElapsedBeforePause + (Date.now() - timerStartedAt);
+
+      const mins = Math.max(1, Math.round(totalElapsed / 60000));
+
+      timerStartedAt = null;
+      timerElapsedBeforePause = 0;
 
       await recordSession($("timerSubject").value, mins);
 
-      timerStartedAt = null;
       timerSeconds = 0;
       updateTimerDisplay();
 
@@ -1412,7 +1423,7 @@ function updateTimerDisplay() {
 }
 
 $("subjectTimeLimit").addEventListener("change", () => {
-  if (timerRunning) {
+  if (timerRunning || timerStartedAt) {
     alert("पहले Timer को Pause या Reset करें।");
     return;
   }
@@ -1425,6 +1436,7 @@ $("subjectTimeLimit").addEventListener("change", () => {
   }
 
   timerSeconds = limit * 60;
+  timerElapsedBeforePause = 0;
   updateTimerDisplay();
 
   $("subjectTimeStatus").textContent =
@@ -1435,6 +1447,7 @@ $("timerReset").onclick = () => {
   clearInterval(timerInterval);
   timerRunning = false;
   timerStartedAt = null;
+  timerElapsedBeforePause = 0;
 
   const limit = Number($("subjectTimeLimit").value);
   timerSeconds = limit >= 5 && limit <= 600 ? limit * 60 : 25 * 60;
@@ -1443,7 +1456,6 @@ $("timerReset").onclick = () => {
   $("timerStart").textContent = "Start";
   $("timerStatus").textContent = "Timer reset.";
 };
-
 document.querySelectorAll("[data-minutes]").forEach(b => {
   b.onclick = () => {
     clearInterval(timerInterval);
