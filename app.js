@@ -1346,6 +1346,7 @@ $("testNotification").addEventListener("click", async () => {
     $("reminderStatus").textContent = "Notification error: " + error.message;
   }
 });
+function navigate(v){
   view=v;
 
   document.querySelectorAll(".view").forEach(el=>
