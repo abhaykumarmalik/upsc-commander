@@ -1458,14 +1458,28 @@ document.querySelectorAll("[data-minutes]").forEach(b => {
     $("timerStart").textContent = "Start";
   };
 });
-$("exportButton").onclick=()=>{const blob=new Blob([JSON.stringify({
-  tasks,
-  sessions,
-  subjectProgress,
-  dailyGoal,
-  exportedAt: new Date().toISOString()
-}, null, 2)},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="upsc-commander-backup.json";a.click();URL.revokeObjectURL(a.href);toast("Backup downloaded")};
+$("exportButton").onclick = () => {
+  const blob = new Blob(
+    [
+      JSON.stringify({
+        tasks,
+        sessions,
+        subjectProgress,
+        dailyGoal,
+        exportedAt: new Date().toISOString()
+      }, null, 2)
+    ],
+    { type: "application/json" }
+  );
 
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "upsc-commander-backup.json";
+  a.click();
+
+  URL.revokeObjectURL(a.href);
+  toast("Backup downloaded");
+};
 $("importFile").onchange = async (event) => {
   const file = event.target.files[0];
 
