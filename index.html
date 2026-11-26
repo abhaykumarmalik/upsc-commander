@@ -66,246 +66,233 @@
         <div class="top-actions"><span class="sync-pill" id="modePill">● DEMO MODE</span><div class="avatar" id="avatar">A</div></div>
       </header>
 
-      <section class="view" id="view-dashboard">
-        <div class="welcome-panel">
-          <div><p class="eyebrow">STAY FOCUSED</p><h1>Small steps.<br><span>Serious progress.</span></h1><p class="muted">Your daily target is 6 focused study hours.</p></div>
-          <div class="target-ring" id="targetRing"><div><strong id="todayHours">0.0h</strong><small>OF 6 HOURS</small></div></div>
-          <article class="panel">
-  <div class="panel-head">
-    <h3>Daily Study Goal</h3>
-    <span class="muted">Set your daily target</span>
+      
+<section class="view" id="view-dashboard">
+
+  <div class="welcome-panel">
+    <div>
+      <p class="eyebrow">STAY FOCUSED</p>
+      <h1>Small steps.<br><span>Serious progress.</span></h1>
+      <p class="muted">Your daily target is 6 focused study hours.</p>
+    </div>
+    <div class="target-ring" id="targetRing">
+      <div>
+        <strong id="todayHours">0.0h</strong>
+        <small>OF 6 HOURS</small>
+      </div>
+    </div>
   </div>
 
-  <label for="dailyGoalInput">Study target (hours)</label>
+  <article class="panel">
+    <div class="panel-head">
+      <h3>Daily Study Goal</h3>
+      <span class="muted">Set your daily target</span>
+    </div>
+    <label for="dailyGoalInput">Study target (hours)</label>
+    <div class="timer-controls">
+      <input type="number" id="dailyGoalInput" min="1" max="18" value="6" class="timer-select">
+      <button class="primary" id="saveDailyGoal">Save Goal</button>
+    </div>
+    <p class="muted" id="dailyGoalStatus">Your daily target is 6 hours.</p>
+    <div class="progress-track">
+      <div class="progress-fill" id="dailyGoalProgress" style="width:0%"></div>
+    </div>
+    <p id="dailyGoalRemaining">6 hours remaining today.</p>
+  </article>
 
-  <div class="timer-controls">
-    <input
-      type="number"
-      id="dailyGoalInput"
-      min="1"
-      max="18"
-      value="6"
-      class="timer-select"
-    />
-    <button class="primary" id="saveDailyGoal">Save Goal</button>
-  </div>
+  <article class="panel">
+    <div class="panel-head">
+      <h3>Daily Goal History</h3>
+      <span class="muted">Last 7 days</span>
+    </div>
+    <div id="goalHistory">
+      <p class="muted">Loading history...</p>
+    </div>
+  </article>
 
-  <p class="muted" id="dailyGoalStatus">
-    Your daily target is 6 hours.
-  </p>
+  <article class="panel">
+    <div class="panel-head">
+      <h3>Weekly Study Report</h3>
+      <span class="muted">This week</span>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><span>Total Study Hours</span><strong id="weeklyTotalHours">0h</strong></div>
+      <div class="stat-card"><span>Daily Average</span><strong id="weeklyAverageHours">0h</strong></div>
+      <div class="stat-card"><span>Best Study Day</span><strong id="weeklyBestDay">--</strong></div>
+      <div class="stat-card"><span>Goals Completed</span><strong id="weeklyGoalsCompleted">0/7</strong></div>
+    </div>
+  </article>
 
-  <div class="progress-track">
-    <div class="progress-fill" id="dailyGoalProgress" style="width:0%"></div>
-  </div>
+  <article class="panel">
+    <div class="panel-head">
+      <h3>Monthly Study Report</h3>
+      <span class="muted">This month</span>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><span>Total Study Hours</span><strong id="monthlyTotalHours">0h</strong></div>
+      <div class="stat-card"><span>Daily Average</span><strong id="monthlyAverageHours">0h</strong></div>
+      <div class="stat-card"><span>Completed Tasks</span><strong id="monthlyCompletedTasks">0</strong></div>
+      <div class="stat-card"><span>Goal Achievement</span><strong id="monthlyGoalAchievement">0%</strong></div>
+      <div class="stat-card"><span>Best Study Day</span><strong id="monthlyBestDay">--</strong></div>
+    </div>
+  </article>
 
-  <p id="dailyGoalRemaining">6 hours remaining today.</p>
-<article class="panel">
-  <div class="panel-head">
-    <h3>Daily Goal History</h3>
-    <span class="muted">Last 7 days</span>
-  </div>
+  <article class="panel">
+    <div class="panel-head">
+      <h3>Monthly Performance Chart</h3>
+      <span class="muted">Daily study hours</span>
+    </div>
+    <div id="monthlyPerformanceChart" class="bar-chart">
+      <p class="muted">Loading monthly performance...</p>
+    </div>
+  </article>
 
-  <div id="goalHistory">
-    <p class="muted">Loading history...</p>
-  </div>
+  <article class="panel">
+    <div class="panel-head">
+      <h3>Study Calendar</h3>
+      <span class="muted">Monthly activity</span>
+    </div>
+    <div id="studyCalendar" class="calendar-grid">
+      <p class="muted">Loading calendar...</p>
+    </div>
+    <div id="calendarDetails" class="muted">
+      Select a date to view study details.
+    </div>
+  </article>
 
-<article class="panel">
-  <div class="panel-head">
-    <h3>Weekly Study Report</h3>
-    <span class="muted">This week</span>
+  <article class="panel">
+    <div class="panel-head">
+      <h3>Study Insights & Recommendations</h3>
+      <span class="muted">Your performance analysis</span>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><span>Top Subject</span><strong id="insightTopSubject">--</strong></div>
+      <div class="stat-card"><span>Best Study Day</span><strong id="insightBestDay">--</strong></div>
+      <div class="stat-card"><span>Goals Completed</span><strong id="insightGoalsCompleted">0</strong></div>
+      <div class="stat-card"><span>Consistency Score</span><strong id="insightConsistency">0%</strong></div>
+    </div>
+    <div style="margin-top:20px;">
+      <h4>Recommendations</h4>
+      <div id="studyRecommendations">
+        <p class="muted">Analyzing your study performance...</p>
+      </div>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <h3>UPSC Subject Performance</h3>
+      <span class="muted">Subject-wise comparison</span>
+    </div>
+    <div id="subjectPerformanceComparison">
+      <p class="muted">Loading subject performance...</p>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <h3>Subject Study Goals</h3>
+      <span class="muted">Monthly targets</span>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <select id="goalSubject" style="flex:1; min-width:150px;">
+        <option value="Polity">Polity</option>
+        <option value="History">History</option>
+        <option value="Geography">Geography</option>
+        <option value="Economy">Economy</option>
+        <option value="Environment">Environment</option>
+        <option value="Science & Technology">Science & Technology</option>
+        <option value="Current Affairs">Current Affairs</option>
+      </select>
+      <input type="number" id="subjectGoalHours" min="1" max="300" placeholder="Target hours" style="flex:1; min-width:120px;">
+      <button id="saveSubjectGoal">Save Goal</button>
+    </div>
+    <div id="subjectGoalsList" style="margin-top:20px;">
+      <p class="muted">No subject goals added yet.</p>
+    </div>
+    <div class="panel-head">
+      <h3>Subject Goal History</h3>
+      <span class="muted">Saved goals</span>
+    </div>
+    <div id="subjectGoalHistory">
+      <p class="muted">Loading subject goal history...</p>
+    </div>
+  </article>
+
+  <div class="stats-grid" style="margin-top:20px;">
+    <div class="stat-card">
+      <span>Top Performing Subject</span>
+      <strong id="topPerformingSubject">--</strong>
+    </div>
+    <div class="stat-card">
+      <span>Study Hours</span>
+      <strong id="topSubjectHours">0h</strong>
+    </div>
   </div>
 
   <div class="stats-grid">
-    <div class="stat-card">
-      <span>Total Study Hours</span>
-      <strong id="weeklyTotalHours">0h</strong>
-    </div>
-
-    <div class="stat-card">
-      <span>Daily Average</span>
-      <strong id="weeklyAverageHours">0h</strong>
-    </div>
-
-    <div class="stat-card">
-      <span>Best Study Day</span>
-      <strong id="weeklyBestDay">--</strong>
-    </div>
-
-    <div class="stat-card">
-      <span>Goals Completed</span>
-      <strong id="weeklyGoalsCompleted">0/7</strong>
-    </div>
-  </div>
-
-<article class="panel">
-  <div class="panel-head">
-    <h3>Monthly Study Report</h3>
-    <span class="muted">This month</span>
+    <article class="stat-card">
+      <span class="stat-icon">◷</span>
+      <small>STUDY TIME TODAY</small>
+      <strong id="statStudy">0h 00m</strong>
+      <span class="stat-note">Focused sessions</span>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon">✓</span>
+      <small>TASKS COMPLETED</small>
+      <strong id="statTasks">0 / 0</strong>
+      <span class="stat-note">Today's priorities</span>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon">▣</span>
+      <small>SYLLABUS PROGRESS</small>
+      <strong id="statSyllabus">0%</strong>
+      <span class="stat-note">Across tracked subjects</span>
+    </article>
   </div>
 
   <div class="stats-grid">
-    <div class="stat-card">
-      <span>Total Study Hours</span>
-      <strong id="monthlyTotalHours">0h</strong>
-    </div>
-
-    <div class="stat-card">
-      <span>Daily Average</span>
-      <strong id="monthlyAverageHours">0h</strong>
-    </div>
-
-    <div class="stat-card">
-      <span>Completed Tasks</span>
-      <strong id="monthlyCompletedTasks">0</strong>
-    </div>
-
-    <div class="stat-card">
-      <span>Goal Achievement</span>
-      <strong id="monthlyGoalAchievement">0%</strong>
-    </div>
-
-    <div class="stat-card">
-      <span>Best Study Day</span>
-      <strong id="monthlyBestDay">--</strong>
-    </div>
+    <article class="stat-card">
+      <span class="stat-icon">🔥</span>
+      <small>CURRENT STREAK</small>
+      <strong id="currentStreak">0 days</strong>
+      <span class="stat-note">Consecutive study days</span>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon">🏆</span>
+      <small>LONGEST STREAK</small>
+      <strong id="longestStreak">0 days</strong>
+      <span class="stat-note">Your personal record</span>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon">📅</span>
+      <small>MONTHLY CONSISTENCY</small>
+      <strong id="monthlyConsistency">0 days</strong>
+      <span class="stat-note">Study days this month</span>
+    </article>
   </div>
 
-<article class="panel">
-  <div class="panel-head">
-    <h3>Monthly Performance Chart</h3>
-    <span class="muted">Daily study hours</span>
+  <div class="content-grid">
+    <article class="panel">
+      <div class="panel-head">
+        <div><p class="eyebrow">TODAY</p><h3>Priority tasks</h3></div>
+        <button class="text-button" data-go="planner">View planner →</button>
+      </div>
+      <div id="dashboardTasks" class="task-list"></div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-head">
+        <div><p class="eyebrow">QUICK ACTION</p><h3>Start a focus session</h3></div>
+      </div>
+      <p class="muted">Choose a subject and begin a distraction-free study block.</p>
+      <button class="primary full" data-go="timer">Open study timer →</button>
+      <div class="quote">“It always seems impossible until it’s done.”<small>— Study principle</small></div>
+    </article>
   </div>
 
-  <div id="monthlyPerformanceChart" class="bar-chart">
-    <p class="muted">Loading monthly performance...</p>
-  </div>
-
-<article class="panel">
-  <div class="panel-head">
-    <h3>Study Calendar</h3>
-    <span class="muted">Monthly activity</span>
-  </div>
-
-  <div id="studyCalendar" class="calendar-grid">
-    <p class="muted">Loading calendar...</p>
-  </div>
-
-  <div id="calendarDetails" class="muted">
-    Select a date to view study details.
-  </div>
-
-<article class="panel">
-  <div class="panel-head">
-    <h3>Study Insights & Recommendations</h3>
-    <span class="muted">Your performance analysis</span>
-  </div>
-
-  <div class="stats-grid">
-    <div class="stat-card">
-      <span>Top Subject</span>
-      <strong id="insightTopSubject">--</strong>
-    </div>
-
-    <div class="stat-card">
-      <span>Best Study Day</span>
-      <strong id="insightBestDay">--</strong>
-    </div>
-
-    <div class="stat-card">
-      <span>Goals Completed</span>
-      <strong id="insightGoalsCompleted">0</strong>
-    </div>
-
-    <div class="stat-card">
-      <span>Consistency Score</span>
-      <strong id="insightConsistency">0%</strong>
-    </div>
-  </div>
-
-  <div style="margin-top:20px;">
-    <h4>Recommendations</h4>
-    <div id="studyRecommendations">
-      <p class="muted">Analyzing your study performance...</p>
-    </div>
-  </div>
-
-<article class="panel">
-  <div class="panel-head">
-    <h3>UPSC Subject Performance</h3>
-    <span class="muted">Subject-wise comparison</span>
-  </div>
-
-  <div id="subjectPerformanceComparison">
-    <p class="muted">Loading subject performance...</p>
-  </div>
-
-<article class="panel">
-  <div class="panel-head">
-    <h3>Subject Study Goals</h3>
-    <span class="muted">Monthly targets</span>
-  </div>
-
-  <div style="display:flex; gap:10px; flex-wrap:wrap;">
-    <select id="goalSubject" style="flex:1; min-width:150px;">
-      <option value="Polity">Polity</option>
-      <option value="History">History</option>
-      <option value="Geography">Geography</option>
-      <option value="Economy">Economy</option>
-      <option value="Environment">Environment</option>
-      <option value="Science & Technology">Science & Technology</option>
-      <option value="Current Affairs">Current Affairs</option>
-    </select>
-
-    <input
-      type="number"
-      id="subjectGoalHours"
-      min="1"
-      max="300"
-      placeholder="Target hours"
-      style="flex:1; min-width:120px;"
-    />
-
-    <button id="saveSubjectGoal">Save Goal</button>
-  </div>
-
-  <div id="subjectGoalsList" style="margin-top:20px;">
-    <p class="muted">No subject goals added yet.</p>
-  </div>
-
-<article class="panel">
-  <div class="panel-head">
-    <h3>Subject Goal History</h3>
-    <span class="muted">Saved goals</span>
-  </div>
-
-  <div id="subjectGoalHistory">
-    <p class="muted">Loading subject goal history...</p>
-  </div>
-</article>
-
-
-<div class="stats-grid" style="margin-top:20px;">
-  <div class="stat-card">
-    <span>Top Performing Subject</span>
-    <strong id="topPerformingSubject">--</strong>
-  </div>
-  <div class="stat-card">
-    <span>Study Hours</span>
-    <strong id="topSubjectHours">0h</strong>
-  </div>
-</div>
-
-</article>
-</article>
-</article>
-</article>
-</article>
-</article>
-</article>
-</article>
-</article>
-</div>
 </section>
+
 
 
 
