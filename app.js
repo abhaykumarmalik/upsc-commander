@@ -1682,6 +1682,9 @@ if (
     "monthlyGoalTarget",
     Number(data.monthlyGoal)
   );
+ if (typeof monthlyGoal !== "undefined") {
+  monthlyGoal = Number(data.monthlyGoal);
+}
 }
     $("dailyGoalInput").value = dailyGoal;
 
