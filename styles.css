@@ -208,11 +208,14 @@ video {
 /* All App Pages - Laptop Layout Fix */
 @media (min-width: 1201px) {
   .main {
+    margin-left: 248px;
+    width: calc(100% - 248px);
+    max-width: none;
+    min-height: 100vh;
     overflow: visible;
   }
 
   .view {
-    display: block;
     width: 100%;
     min-width: 0;
     height: auto;
@@ -229,11 +232,15 @@ video {
     min-width: 0;
   }
 
-  .subject-grid,
-  .timer-layout,
+  .panel,
+  .stats-grid,
   .content-grid,
-  .stats-grid {
+  .subject-grid,
+  .timer-layout {
     min-width: 0;
     max-width: 100%;
+    height: auto;
+    max-height: none;
+    overflow: visible;
   }
 }
