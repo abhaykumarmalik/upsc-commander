@@ -1311,6 +1311,63 @@ $("saveReminderSettings").addEventListener("click", () => {
 });
 
 loadReminderSettings();
+// Automatic Study Reminders
+
+function checkStudyReminders() {
+  if (Notification.permission !== "granted") return;
+
+  const now = new Date();
+  const currentTime = now.toTimeString().slice(0, 5);
+  const today = now.toISOString().slice(0, 10);
+
+  const reminders = [
+    {
+      id: "studyStart",
+      time: "studyStartTime",
+      enabled: "studyStartEnabled",
+      title: "Study Time!",
+      body: "Your UPSC study session is waiting."
+    },
+    {
+      id: "goalReminder",
+      time: "goalReminderTime",
+      enabled: "goalReminderEnabled",
+      title: "Daily Goal Reminder",
+      body: "Check your daily study target."
+    },
+    {
+      id: "taskReminder",
+      time: "taskReminderTime",
+      enabled: "taskReminderEnabled",
+      title: "Pending Tasks Reminder",
+      body: "Review your pending UPSC tasks."
+    }
+  ];
+
+  reminders.forEach(item => {
+    const time = localStorage.getItem("upsc_reminder_" + item.time);
+    const enabled = localStorage.getItem("upsc_reminder_" + item.enabled);
+    const sentKey = "upsc_sent_" + item.id + "_" + today;
+
+    if (
+      enabled === "true" &&
+      time === currentTime &&
+      localStorage.getItem(sentKey) !== "true"
+    ) {
+      navigator.serviceWorker.ready.then(registration => {
+        registration.showNotification(item.title, {
+          body: item.body,
+          icon: "./icon-192.png"
+        });
+      });
+
+      localStorage.setItem(sentKey, "true");
+    }
+  });
+}
+
+setInterval(checkStudyReminders, 30000);
+checkStudyReminders();
 // Test Browser Notification
 
 $("testNotification").addEventListener("click", async () => {
