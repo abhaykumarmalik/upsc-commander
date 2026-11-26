@@ -303,7 +303,7 @@ const bestDate = Object.keys(monthlyBest).sort(
 )[0];
 
 const completedMonthlyTasks = tasks.filter(t => {
-  if (!t.completed) return false;
+  if (!t.done) return false;
 
   const d = new Date(t.completedAt || t.date);
   return (
