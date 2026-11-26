@@ -1267,6 +1267,50 @@ function renderStudyStreak() {
 }
 
 function renderAll(){renderStudyStreak();renderDashboard();renderSubjects();renderAnalytics();$("plannerDate").value=selectedDate;$("todayLabel").textContent=dateLabel(today()).toUpperCase()}
+// UPSC COMMANDER Reminder Settings
+
+const reminderInputs = [
+  "studyStartTime",
+  "goalReminderTime",
+  "taskReminderTime",
+  "studyStartEnabled",
+  "goalReminderEnabled",
+  "taskReminderEnabled"
+];
+
+function loadReminderSettings() {
+  reminderInputs.forEach(id => {
+    const saved = localStorage.getItem("upsc_reminder_" + id);
+    if (saved !== null && $(id)) {
+      if ($(id).type === "checkbox") {
+        $(id).checked = saved === "true";
+      } else {
+        $(id).value = saved;
+      }
+    }
+  });
+}
+
+$("saveReminderSettings").addEventListener("click", () => {
+  reminderInputs.forEach(id => {
+    const element = $(id);
+    if (element) {
+      localStorage.setItem(
+        "upsc_reminder_" + id,
+        element.type === "checkbox"
+          ? String(element.checked)
+          : element.value
+      );
+    }
+  });
+
+  $("reminderStatus").textContent =
+    "Reminder settings saved successfully.";
+
+  toast("Reminder settings saved!");
+});
+
+loadReminderSettings();
 function navigate(v){
   view=v;
 
