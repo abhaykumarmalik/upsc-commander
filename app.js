@@ -1682,7 +1682,14 @@ $("importFile").onchange = async (event) => {
     tasks = restoredTasks;
     sessions = restoredSessions;
     subjectProgress = importedProgress;
+if (data.subjectGoals && typeof data.subjectGoals === "object") {
+  subjectGoals = data.subjectGoals;
 
+  localStorage.setItem(
+    "subjectGoals",
+    JSON.stringify(subjectGoals)
+  );
+}
     if (
       Number.isFinite(Number(data.dailyGoal)) &&
       Number(data.dailyGoal) >= 1 &&
