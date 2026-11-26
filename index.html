@@ -607,7 +607,59 @@
   <div id="recentSessions" class="task-list"></div>
 </article>
 </section>
+<section class="view hidden" id="view-reminders">
 
+  <div class="section-intro">
+    <div>
+      <p class="eyebrow">STAY CONSISTENT</p>
+      <h3>Study Reminders</h3>
+      <p class="muted">Manage your daily study reminders.</p>
+    </div>
+  </div>
+
+  <article class="panel">
+    <h3>Study Start Reminder</h3>
+    <label for="studyStartTime">Reminder Time</label>
+    <input type="time" id="studyStartTime" value="06:00">
+
+    <label>
+      <input type="checkbox" id="studyStartEnabled" checked>
+      Enable Reminder
+    </label>
+  </article>
+
+  <article class="panel">
+    <h3>Daily Goal Reminder</h3>
+    <label for="goalReminderTime">Reminder Time</label>
+    <input type="time" id="goalReminderTime" value="20:00">
+
+    <label>
+      <input type="checkbox" id="goalReminderEnabled" checked>
+      Enable Reminder
+    </label>
+  </article>
+
+  <article class="panel">
+    <h3>Pending Tasks Reminder</h3>
+    <label for="taskReminderTime">Reminder Time</label>
+    <input type="time" id="taskReminderTime" value="21:00">
+
+    <label>
+      <input type="checkbox" id="taskReminderEnabled" checked>
+      Enable Reminder
+    </label>
+  </article>
+
+  <article class="panel">
+    <button class="primary" id="saveReminderSettings">
+      Save Reminder Settings
+    </button>
+    <p class="muted" id="reminderStatus">
+      Configure your daily reminders.
+    </p>
+  </article>
+
+</section>
       <footer class="footer">UPSC COMMANDER <span>•</span> Built for consistent preparation <span>•</span> Your data, your progress</footer>
     </main>
   </div>
